@@ -1,13 +1,30 @@
-[workspace]
-members = [
-  "apps/api",
-  "crates/auth",
-  "crates/hotels",
-  "crates/inventory",
-  "crates/bookings",
-  "crates/billing",
-  "crates/search",
-  "crates/admin",
-  "crates/common"
-]
-resolver = "2"
+[package]
+name = "api"
+version = "0.1.0"
+edition = "2021"
+
+# This is a binary crate
+[[bin]]
+name = "api"
+path = "server.rs"
+
+[dependencies]
+# Web framework
+axum = "0.7"
+
+# Async runtime
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+
+# Shared internal crates
+common = { path = "../../crates/common" }
+auth = { path = "../../crates/auth" }
+hotels = { path = "../../crates/hotels" }
+inventory = { path = "../../crates/inventory" }
+bookings = { path = "../../crates/bookings" }
+billing = { path = "../../crates/billing" }
+search = { path = "../../crates/search" }
+admin = { path = "../../crates/admin" }
+
+# Logging (optional but recommended)
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
