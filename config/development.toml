@@ -1,7 +1,13 @@
+# config/development.toml
+
 [database]
+scheme = "postgres"
 host = "localhost"
 port = 5432
 name = "booent_db"
-user = "booent_user"
+username = "booent_user"
 password = "booent_pass"
-max_connections = 10
+
+[server]
+host = "127.0.0.1"
+port = 8080

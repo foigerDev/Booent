@@ -1,31 +1,33 @@
 use config::{Config, File};
 use std::env;
 
-use super::RuntimeConfig;
+use super::{AppConfig, RuntimeConfig};
 
 pub fn build_runtime_config() -> RuntimeConfig {
-    let env_name = env::var("BOOENT_ENV").unwrap_or_else(|_| "development".to_string());
+    // Select environment
+    let env_name = env::var("BOOENT_ENV")
+        .unwrap_or_else(|_| "development".to_string());
 
-
+    // Load config file
     let cfg = Config::builder()
         .add_source(File::with_name(&format!("config/{}", env_name)))
         .build()
-        .expect("Failed to load config");
+        .expect("❌ Failed to load config file");
 
-    let database_url = cfg
-        .get_string("database.url")
-        .expect("database.url missing");
+    // Deserialize & validate
+    let app_config: AppConfig = cfg
+        .try_deserialize()
+        .expect("❌ Invalid configuration format");
 
-    let host = cfg
-        .get_string("server.host")
-        .unwrap_or_else(|_| "0.0.0.0".into());
-
-    let port = cfg
-        .get_int("server.port")
-        .unwrap_or(3000);
+    let db_url = app_config.database.to_url();
 
     RuntimeConfig {
-        database_url,
-        server_addr: format!("{}:{}", host, port),
+        database_url: db_url,
+        server_addr: format!(
+            "{}:{}",
+            app_config.server.host,
+            app_config.server.port
+        ),
     }
 }
+

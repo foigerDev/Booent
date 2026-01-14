@@ -11,7 +11,7 @@ pub async fn build_app_state() -> AppState {
     let pool: PgPool = PgPoolOptions::new()
         .max_connections(10)
         .acquire_timeout(Duration::from_secs(5))
-        .connect(&config.database_url)
+        .connect(&config.database_url.to_string())
         .await
         .expect("Failed to connect to Postgres");
 
