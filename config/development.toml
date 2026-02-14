@@ -11,3 +11,6 @@ password = "booent_pass"
 [server]
 host = "127.0.0.1"
 port = 8080
+
+[jwt_data]
+secret_key = "NwYumkQxcG/zEFqbBhOHSDmb65QLIkxwlARtxuKmLQM="

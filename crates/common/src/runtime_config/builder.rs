@@ -1,12 +1,12 @@
 use config::{Config, File};
+use secrecy::Secret;
 use std::env;
 
 use super::{AppConfig, RuntimeConfig};
 
 pub fn build_runtime_config() -> RuntimeConfig {
     // Select environment
-    let env_name = env::var("BOOENT_ENV")
-        .unwrap_or_else(|_| "development".to_string());
+    let env_name = env::var("BOOENT_ENV").unwrap_or_else(|_| "development".to_string());
 
     // Load config file
     let cfg = Config::builder()
@@ -20,14 +20,11 @@ pub fn build_runtime_config() -> RuntimeConfig {
         .expect("❌ Invalid configuration format");
 
     let db_url = app_config.database.to_url();
+    let jwt_secret = Secret::new(app_config.jwt_data.secret_key);
 
     RuntimeConfig {
         database_url: db_url,
-        server_addr: format!(
-            "{}:{}",
-            app_config.server.host,
-            app_config.server.port
-        ),
+        server_addr: format!("{}:{}", app_config.server.host, app_config.server.port),
+        jwt_secret,
     }
 }
-

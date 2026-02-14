@@ -1,8 +1,8 @@
 pub mod builder;
 
+use crate::runtime_config::RuntimeConfig;
 use sqlx::PgPool;
 use std::sync::Arc;
-use crate::runtime_config::RuntimeConfig;
 
 #[derive(Clone)]
 pub struct AppState {

@@ -12,7 +12,10 @@ Internal platform control and governance.
 - GET /admin/hotels/pending
 - POST /admin/hotels/{id}/approve
 - POST /admin/hotels/{id}/reject
+- POST /admin/zones/{zone_id}/limit
 - PUT /admin/zones/{zone_id}/limit
+- GET /admin/zones/{zone_id}/limit
+- GET /admin/zones
 
 ## Depends On
 - hotels

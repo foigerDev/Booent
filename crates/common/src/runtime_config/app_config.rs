@@ -6,6 +6,12 @@ use url::Url;
 pub struct AppConfig {
     pub database: DatabaseConfig,
     pub server: ServerConfig,
+    pub jwt_data: JwtDataConfig,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct JwtDataConfig {
+    pub secret_key: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -34,11 +40,9 @@ impl DatabaseConfig {
         let mut url = Url::parse(&format!("{}://{}", self.scheme, self.host))
             .expect("invalid scheme or host");
 
-        url.set_port(Some(self.port))
-            .expect("invalid port");
+        url.set_port(Some(self.port)).expect("invalid port");
 
-        url.set_username(&self.username)
-            .expect("invalid username");
+        url.set_username(&self.username).expect("invalid username");
 
         url.set_password(Some(&self.password))
             .expect("invalid password");
@@ -48,5 +52,3 @@ impl DatabaseConfig {
         url
     }
 }
-
-

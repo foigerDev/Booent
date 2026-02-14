@@ -2,8 +2,8 @@ use sqlx::{postgres::PgPoolOptions, PgPool};
 use std::sync::Arc;
 use std::time::Duration;
 
-use crate::runtime_config::build_runtime_config;
 use crate::app_state::AppState;
+use crate::runtime_config::build_runtime_config;
 
 pub async fn build_app_state() -> AppState {
     let config = build_runtime_config();
