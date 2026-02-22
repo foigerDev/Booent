@@ -1,6 +1,6 @@
+use super::GoogleConfig;
 use secrecy::Secret;
 use url::Url;
-use super::GoogleConfig;
 
 #[derive(Debug, Clone)]
 pub struct RuntimeConfig {

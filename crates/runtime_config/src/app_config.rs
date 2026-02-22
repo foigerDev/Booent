@@ -1,14 +1,14 @@
+use super::GoogleConfig;
 /// Structs to deserialize the env.toml files
 use serde::Deserialize;
 use url::Url;
-use super::GoogleConfig;
 
 #[derive(Debug, Deserialize)]
 pub struct AppConfig {
     pub database: DatabaseConfig,
     pub server: ServerConfig,
     pub jwt_data: JwtDataConfig,
-    pub google_config: GoogleConfig
+    pub google_config: GoogleConfig,
 }
 
 #[derive(Debug, Deserialize)]
@@ -31,7 +31,6 @@ pub struct ServerConfig {
     pub host: String,
     pub port: u16,
 }
-
 
 impl DatabaseConfig {
     pub fn to_url(&self) -> Url {

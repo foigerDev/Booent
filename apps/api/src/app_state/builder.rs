@@ -1,7 +1,7 @@
+use crate::app_state::AppState;
 use sqlx::{postgres::PgPoolOptions, PgPool};
 use std::sync::Arc;
 use std::time::Duration;
-use crate::app_state::AppState;
 
 pub async fn build_app_state() -> Arc<AppState> {
     let config = runtime_config::build_runtime_config();
@@ -13,8 +13,5 @@ pub async fn build_app_state() -> Arc<AppState> {
         .await
         .expect("Failed to connect to Postgres");
 
-    Arc::new(AppState {
-        db: pool,
-        config,
-    })
+    Arc::new(AppState { db: pool, config })
 }

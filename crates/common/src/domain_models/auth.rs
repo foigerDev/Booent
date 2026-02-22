@@ -1,9 +1,8 @@
-use serde::Deserialize;
 use secrecy::Secret;
+use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
 pub struct GoogleUserClaims {
-
     #[serde(rename = "sub")]
     pub google_user_id: String,
 
@@ -19,4 +18,3 @@ pub struct GoogleUserClaims {
 pub struct GoogleLoginRequest {
     pub id_token: String,
 }
-

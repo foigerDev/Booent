@@ -1,18 +1,17 @@
+use axum::{
+    http::StatusCode,
+    response::{IntoResponse, Response},
+    Json,
+};
 use error_stack::{self, Context};
 use serde::{Deserialize, Serialize};
 use std::fmt;
-use axum::{
-    response::{IntoResponse, Response},
-    http::StatusCode,
-    Json,
-};
-
 
 #[derive(Debug, Serialize, Deserialize)]
 pub enum AuthErrorTypes {
     InvalidToken,
     InvalidGoogleToken,
-    GoogleKeysFetchFailed, 
+    GoogleKeysFetchFailed,
     InternalServerError,
     GoogleJWKNotFound,
     GoogleEmailNotVerified,
@@ -23,11 +22,17 @@ impl fmt::Display for AuthErrorTypes {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             AuthErrorTypes::InvalidToken => write!(f, "Invalid token"),
-            AuthErrorTypes::InvalidGoogleToken => write!(f, "Google authentication failed. Please try again"),
-            AuthErrorTypes::GoogleKeysFetchFailed => write!(f, "Unable to verify login. Please try later!"),
+            AuthErrorTypes::InvalidGoogleToken => {
+                write!(f, "Google authentication failed. Please try again")
+            }
+            AuthErrorTypes::GoogleKeysFetchFailed => {
+                write!(f, "Unable to verify login. Please try later!")
+            }
             AuthErrorTypes::InternalServerError => write!(f, "Server error"),
             AuthErrorTypes::GoogleJWKNotFound => write!(f, "Matching Google JWK not found"),
-            AuthErrorTypes::DataNotFound { field_name } => write!(f, "Data not found: {}", field_name),
+            AuthErrorTypes::DataNotFound { field_name } => {
+                write!(f, "Data not found: {}", field_name)
+            }
             AuthErrorTypes::GoogleEmailNotVerified => write!(f, "Email not verified"),
         }
     }
@@ -57,9 +62,9 @@ where
     let debug = format!("{:#?}", error);
 
     let cleaned_bytes = strip_ansi_escapes::strip(debug);
-    let cleaned = String::from_utf8(cleaned_bytes).ok()
+    let cleaned = String::from_utf8(cleaned_bytes)
+        .ok()
         .unwrap_or_else(|| "Failed to format error".to_string());
-
 
     tracing::error!("{}", cleaned);
 }
@@ -70,7 +75,6 @@ impl IntoResponse for ApiError {
             ApiError::Auth(error) => {
                 log_error_pretty(&error);
                 let err = error.current_context();
-                
 
                 let status = match err {
                     AuthErrorTypes::InvalidGoogleToken => StatusCode::UNAUTHORIZED,
@@ -84,9 +88,9 @@ impl IntoResponse for ApiError {
 
                 let body = ErrorResponse {
                     error: ErrorBody {
-                        code: format!("{:?}", err),   
-                        message: err.to_string(),        
-                    }
+                        code: format!("{:?}", err),
+                        message: err.to_string(),
+                    },
                 };
 
                 (status, Json(body)).into_response()
