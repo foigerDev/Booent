@@ -21,7 +21,7 @@ fn verify_access_token(
         &validation
     )
     .into_report()
-    .change_context(types::AuthErrorTypes::InvalidJWTToken)?;
+    .change_context(types::AuthErrorTypes::InvalidToken)?;
 
     Ok(decoded.claims)
 }

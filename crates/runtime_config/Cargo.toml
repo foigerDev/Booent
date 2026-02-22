@@ -1,0 +1,12 @@
+[package]
+name = "runtime_config"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+config = "0.14"
+serde = { version = "1", features = ["derive"] }
+url = "2"
+secrecy = "0.8"
+error-stack = "0.4"
+auth = { path = "../../crates/auth" }

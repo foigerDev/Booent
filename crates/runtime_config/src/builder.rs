@@ -1,4 +1,4 @@
-use config::{Config, File};
+use ::config::{Config, File};
 use secrecy::Secret;
 use std::env;
 
@@ -26,5 +26,6 @@ pub fn build_runtime_config() -> RuntimeConfig {
         database_url: db_url,
         server_addr: format!("{}:{}", app_config.server.host, app_config.server.port),
         jwt_secret,
+        google_config: app_config.google_config,
     }
 }

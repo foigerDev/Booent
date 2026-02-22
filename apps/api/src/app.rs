@@ -1,10 +1,11 @@
-use crate::routes::health;
+use crate::routes::{health, auth};
+use std::sync::Arc;
 use axum::{
-    routing::{delete, get, post},
+    routing::{get, post},
     Router,
 };
 
-pub fn build_app(state: common::app_state::AppState) -> Router {
+pub fn build_app(state: Arc<crate::app_state::AppState>) -> Router {
     // let user_auth_api = Router::new().route("/identity", post(register_user)).route(
     //     "/session",
     //     post(create_session)
@@ -15,6 +16,7 @@ pub fn build_app(state: common::app_state::AppState) -> Router {
 
     Router::new()
         .route("/health", get(health::health_check))
+        .route("/login",post(auth::login))
         // .nest("/auth", user_auth_api)
         .with_state(state)
 }

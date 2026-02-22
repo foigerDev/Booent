@@ -1,9 +1,11 @@
 use secrecy::Secret;
 use url::Url;
+use super::GoogleConfig;
 
 #[derive(Debug, Clone)]
 pub struct RuntimeConfig {
     pub database_url: Url,
     pub server_addr: String,
     pub jwt_secret: Secret<String>,
+    pub google_config: GoogleConfig,
 }
