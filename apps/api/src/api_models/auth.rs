@@ -1,5 +1,5 @@
 use common::domain_models::auth::GoogleLoginRequest;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 
 #[derive(Deserialize)]
 pub struct LoginRequest {

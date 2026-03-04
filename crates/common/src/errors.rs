@@ -16,6 +16,7 @@ pub enum AuthErrorTypes {
     GoogleJWKNotFound,
     GoogleEmailNotVerified,
     DataNotFound { field_name: String },
+    ApiAuthorizationFailed,
 }
 
 impl fmt::Display for AuthErrorTypes {
@@ -34,6 +35,7 @@ impl fmt::Display for AuthErrorTypes {
                 write!(f, "Data not found: {}", field_name)
             }
             AuthErrorTypes::GoogleEmailNotVerified => write!(f, "Email not verified"),
+            AuthErrorTypes::ApiAuthorizationFailed => write!(f, "Unauthorized access"),
         }
     }
 }
@@ -84,6 +86,7 @@ impl IntoResponse for ApiError {
                     AuthErrorTypes::DataNotFound { .. } => StatusCode::NOT_FOUND,
                     AuthErrorTypes::GoogleEmailNotVerified => StatusCode::EXPECTATION_FAILED,
                     AuthErrorTypes::InternalServerError => StatusCode::INTERNAL_SERVER_ERROR,
+                    AuthErrorTypes::ApiAuthorizationFailed => StatusCode::UNAUTHORIZED,
                 };
 
                 let body = ErrorResponse {

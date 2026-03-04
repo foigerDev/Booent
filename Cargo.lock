@@ -56,9 +56,11 @@ dependencies = [
  "inventory",
  "runtime_config",
  "search",
+ "secrecy",
  "serde",
  "sqlx",
  "tokio",
+ "tracing",
  "tracing-subscriber",
 ]
 

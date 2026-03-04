@@ -5,6 +5,7 @@ use std::time::Duration;
 
 pub async fn build_app_state() -> Arc<AppState> {
     let config = runtime_config::build_runtime_config();
+    tracing::info!("Loaded Run Time Configs");
 
     let pool: PgPool = PgPoolOptions::new()
         .max_connections(10)

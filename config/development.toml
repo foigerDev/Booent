@@ -17,3 +17,6 @@ secret_key = "NwYumkQxcG/zEFqbBhOHSDmb65QLIkxwlARtxuKmLQM="
 
 [google_config]
 client_id = '816764122619-nqbtt71iv732ofgrt491r8s4n0ec2j9c.apps.googleusercontent.com'
+
+[admin_data]
+api_key = "test_admin"

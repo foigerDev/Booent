@@ -1,4 +1,4 @@
-use super::GoogleConfig;
+use crate::common_types::GoogleConfig;
 /// Structs to deserialize the env.toml files
 use serde::Deserialize;
 use url::Url;
@@ -9,6 +9,12 @@ pub struct AppConfig {
     pub server: ServerConfig,
     pub jwt_data: JwtDataConfig,
     pub google_config: GoogleConfig,
+    pub admin_data: AdminData,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct AdminData {
+    pub api_key: String,
 }
 
 #[derive(Debug, Deserialize)]

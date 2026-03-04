@@ -21,11 +21,13 @@ pub fn build_runtime_config() -> RuntimeConfig {
 
     let db_url = app_config.database.to_url();
     let jwt_secret = Secret::new(app_config.jwt_data.secret_key);
+    let admin_api_key = Secret::new(app_config.admin_data.api_key);
 
     RuntimeConfig {
         database_url: db_url,
         server_addr: format!("{}:{}", app_config.server.host, app_config.server.port),
         jwt_secret,
         google_config: app_config.google_config,
+        admin_api_key,
     }
 }

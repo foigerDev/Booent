@@ -8,4 +8,5 @@ pub struct RuntimeConfig {
     pub server_addr: String,
     pub jwt_secret: Secret<String>,
     pub google_config: GoogleConfig,
+    pub admin_api_key: Secret<String>,
 }
