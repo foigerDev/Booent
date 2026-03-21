@@ -7,9 +7,17 @@ edition = "2021"
 axum = "0.7"
 error-stack = "0.4"
 serde = { version = "1", features = ["derive"] }
-sqlx = { version = "0.7", features = ["runtime-tokio", "postgres", "macros"] }
+sqlx = { version = "0.7", features = ["runtime-tokio", "postgres", "macros",  "uuid", "time"] }
 pii = "0.1"
 secrecy = { version = "0.8", features = ["serde"] }
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 strip-ansi-escapes = "0.2"
+strum = "0.26"
+strum_macros = "0.26"
+uuid = { version = "1", features = ["v4", "serde"] }
+time = { version = "0.3", features = ["serde", "macros"] }
+async-trait = "0.1"
+aes-gcm = "0.10"
+rand = "0.8"
+base64 = "0.22"

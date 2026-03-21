@@ -1,2 +1,1 @@
-pub mod google_auth;
-pub mod verifier;
+pub mod user_management;

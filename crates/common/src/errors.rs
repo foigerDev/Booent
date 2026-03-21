@@ -17,6 +17,8 @@ pub enum AuthErrorTypes {
     GoogleEmailNotVerified,
     DataNotFound { field_name: String },
     ApiAuthorizationFailed,
+    UserAlreadyRegistered,
+    UserNotFound,
 }
 
 impl fmt::Display for AuthErrorTypes {
@@ -36,14 +38,36 @@ impl fmt::Display for AuthErrorTypes {
             }
             AuthErrorTypes::GoogleEmailNotVerified => write!(f, "Email not verified"),
             AuthErrorTypes::ApiAuthorizationFailed => write!(f, "Unauthorized access"),
+            AuthErrorTypes::UserAlreadyRegistered => {
+                write!(f, "User already registered! Please logging in")
+            }
+            AuthErrorTypes::UserNotFound => write!(f, "User not found"),
         }
     }
 }
 
 impl Context for AuthErrorTypes {}
 
+#[derive(Debug, Serialize, Deserialize)]
+pub enum EncryptionErrorTypes {
+    EncryptionFailed,
+    DecryptionFailed,
+}
+
+impl fmt::Display for EncryptionErrorTypes {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            EncryptionErrorTypes::EncryptionFailed => write!(f, "Encryption failed"),
+            EncryptionErrorTypes::DecryptionFailed => write!(f, "Decryption failed"),
+        }
+    }
+}
+
+impl Context for EncryptionErrorTypes {}
+
 pub enum ApiError {
     Auth(error_stack::Report<AuthErrorTypes>),
+    Encryption(error_stack::Report<EncryptionErrorTypes>),
 }
 
 #[derive(Serialize)]
@@ -87,6 +111,25 @@ impl IntoResponse for ApiError {
                     AuthErrorTypes::GoogleEmailNotVerified => StatusCode::EXPECTATION_FAILED,
                     AuthErrorTypes::InternalServerError => StatusCode::INTERNAL_SERVER_ERROR,
                     AuthErrorTypes::ApiAuthorizationFailed => StatusCode::UNAUTHORIZED,
+                    AuthErrorTypes::UserAlreadyRegistered => StatusCode::BAD_REQUEST,
+                    AuthErrorTypes::UserNotFound => StatusCode::NOT_FOUND,
+                };
+
+                let body = ErrorResponse {
+                    error: ErrorBody {
+                        code: format!("{:?}", err),
+                        message: err.to_string(),
+                    },
+                };
+
+                (status, Json(body)).into_response()
+            }
+            ApiError::Encryption(error) => {
+                log_error_pretty(&error);
+                let err = error.current_context();
+                let status = match err {
+                    EncryptionErrorTypes::EncryptionFailed
+                    | EncryptionErrorTypes::DecryptionFailed => StatusCode::INTERNAL_SERVER_ERROR,
                 };
 
                 let body = ErrorResponse {
