@@ -3,7 +3,6 @@ use aes_gcm::{Aes256Gcm, KeyInit, Nonce};
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine as _};
 use rand::RngCore;
 use secrecy::{ExposeSecret, Secret};
-
 use error_stack::{Report, ResultExt};
 
 use crate::errors;
@@ -51,7 +50,6 @@ pub fn decrypt_string(
         .change_context(errors::EncryptionErrorTypes::DecryptionFailed)?;
 
     let nonce = Nonce::from_slice(nonce_bytes);
-
     let decrypted = cipher
         .decrypt(nonce, ciphertext)
         .map_err(|_| Report::new(errors::EncryptionErrorTypes::DecryptionFailed))

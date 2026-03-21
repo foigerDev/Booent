@@ -9,7 +9,7 @@ const REFRESH_TOKEN_COOKIE_NAME: &str = "refresh_token";
 const COOKIE_DOMAIN: &str = "yourdomain.com"; // Set from config in production
 
 pub fn build_refresh_token_cookie(token: &str) -> Cookie<'static> {
-    let max_age = Duration::minutes(MAX_REFRESH_TOKEN_VALIDITY_IN_MINUTES as i64);
+    let max_age = Duration::minutes(MAX_REFRESH_TOKEN_VALIDITY_IN_MINUTES);
 
     Cookie::build((REFRESH_TOKEN_COOKIE_NAME, token.to_string()))
         .secure(true)

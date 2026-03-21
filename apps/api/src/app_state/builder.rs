@@ -10,7 +10,7 @@ pub async fn build_app_state() -> Arc<AppState> {
     let pool: PgPool = PgPoolOptions::new()
         .max_connections(10)
         .acquire_timeout(Duration::from_secs(5))
-        .connect(&config.database_url.to_string())
+        .connect(config.database_url.as_ref())
         .await
         .expect("Failed to connect to Postgres");
 

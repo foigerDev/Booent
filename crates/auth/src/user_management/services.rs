@@ -37,7 +37,7 @@ pub async fn user_login(
             &app_configs.admin_api_key,
         )
         .await?;
-    let user = user.ok_or_else(|| errors::AuthErrorTypes::UserNotFound)?;
+    let user = user.ok_or(errors::AuthErrorTypes::UserNotFound)?;
     let session_id = uuid::Uuid::new_v4().to_string();
     let tokens = user_auth_core(app_state, app_configs, session_id, user.id).await?;
     Ok(tokens)
