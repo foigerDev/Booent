@@ -12,6 +12,7 @@ pii = "0.1"
 secrecy = { version = "0.8", features = ["serde"] }
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+sha2 = "0.10"
 strip-ansi-escapes = "0.2"
 strum = "0.26"
 strum_macros = "0.26"

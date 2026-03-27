@@ -10,6 +10,8 @@ pub trait SessionRepository {
     ) -> Result<domain_models::auth::SessionData, error_stack::Report<errors::AuthErrorTypes>>;
 }
 
+// todo change error types to database error type
+
 #[async_trait]
 impl SessionRepository for sqlx::PgPool {
     async fn create_session(

@@ -1,0 +1,37 @@
+INSERT INTO users (
+    id,
+    auth_provider,
+    auth_provider_user_id,
+    name,
+    email,
+    is_email_verified,
+    phone,
+    is_phone_verified,
+    picture_url,
+    status
+)
+VALUES (
+    $1,
+    $2,
+    $3,
+    $4,
+    $5,
+    $6,
+    $7,
+    $8,
+    $9,
+    $10
+)
+RETURNING
+    id,
+    auth_provider,
+    auth_provider_user_id,
+    name,
+    email,
+    is_email_verified,
+    phone,
+    is_phone_verified,
+    picture_url,
+    status,
+    created_at,
+    updated_at;

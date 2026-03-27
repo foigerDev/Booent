@@ -65,9 +65,29 @@ impl fmt::Display for EncryptionErrorTypes {
 
 impl Context for EncryptionErrorTypes {}
 
+#[derive(Debug, Serialize, Deserialize)]
+pub enum HotelErrorTypes {
+    HotelCreationFailed,
+    HotelAlreadyExists,
+    InternalServerError,
+}
+
+impl fmt::Display for HotelErrorTypes {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            HotelErrorTypes::HotelCreationFailed => write!(f, "Hotel creation failed"),
+            HotelErrorTypes::HotelAlreadyExists => write!(f, "Hotel already registered"),
+            HotelErrorTypes::InternalServerError => write!(f, "Internal server error"),
+        }
+    }
+}
+
+impl Context for HotelErrorTypes {}
+
 pub enum ApiError {
     Auth(error_stack::Report<AuthErrorTypes>),
     Encryption(error_stack::Report<EncryptionErrorTypes>),
+    Hotel(error_stack::Report<HotelErrorTypes>),
 }
 
 #[derive(Serialize)]
@@ -130,6 +150,24 @@ impl IntoResponse for ApiError {
                 let status = match err {
                     EncryptionErrorTypes::EncryptionFailed
                     | EncryptionErrorTypes::DecryptionFailed => StatusCode::INTERNAL_SERVER_ERROR,
+                };
+
+                let body = ErrorResponse {
+                    error: ErrorBody {
+                        code: format!("{:?}", err),
+                        message: err.to_string(),
+                    },
+                };
+
+                (status, Json(body)).into_response()
+            }
+            ApiError::Hotel(error) => {
+                log_error_pretty(&error);
+                let err = error.current_context();
+                let status = match err {
+                    HotelErrorTypes::HotelCreationFailed => StatusCode::INTERNAL_SERVER_ERROR,
+                    HotelErrorTypes::HotelAlreadyExists => StatusCode::CONFLICT,
+                    HotelErrorTypes::InternalServerError => StatusCode::INTERNAL_SERVER_ERROR,
                 };
 
                 let body = ErrorResponse {

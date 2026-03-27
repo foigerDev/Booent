@@ -1,0 +1,137 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO hotels (\n    name,\n    slug,\n    email,\n    phone,\n    address_line1,\n    address_line2,\n    city,\n    state,\n    country,\n    pincode,\n    check_in_time,\n    check_out_time,\n    logo_url,\n    cover_image_url\n) VALUES (\n    $1,  -- name\n    $2,  -- slug\n    $3,  -- email\n    $4,  -- phone\n    $5,  -- address_line1\n    $6,  -- address_line2\n    $7,  -- city\n    $8,  -- state\n    $9,  -- country (e.g. 'India')\n    $10, -- pincode\n    $11, -- check_in_time (TIME)\n    $12, -- check_out_time (TIME)\n    $13, -- logo_url\n    $14  -- cover_image_url\n)\nRETURNING *;",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "slug",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "email",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "phone",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 5,
+        "name": "address_line1",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 6,
+        "name": "address_line2",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 7,
+        "name": "city",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 8,
+        "name": "state",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 9,
+        "name": "country",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 10,
+        "name": "pincode",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 11,
+        "name": "check_in_time",
+        "type_info": "Time"
+      },
+      {
+        "ordinal": 12,
+        "name": "check_out_time",
+        "type_info": "Time"
+      },
+      {
+        "ordinal": 13,
+        "name": "cover_image_url",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 14,
+        "name": "logo_url",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 15,
+        "name": "status",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 16,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 17,
+        "name": "updated_at",
+        "type_info": "Timestamptz"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Time",
+        "Time",
+        "Text",
+        "Text"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "5a7510ebb86eccda498ea8227dc31258a2e3880491ef644cebb5614ef28af318"
+}

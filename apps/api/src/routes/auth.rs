@@ -44,8 +44,8 @@ pub async fn signup(
     headers: HeaderMap,
     Json(payload): Json<api_models_auth::LoginRequest>,
 ) -> Result<impl IntoResponse, ApiError> {
-     utils::validate_api_key(&headers, state.config.admin_api_key.expose_secret())?;
-         let claims = verify_google_login(payload.into(), state.config.google_config.client_id.clone())
+    utils::validate_api_key(&headers, state.config.admin_api_key.expose_secret())?;
+    let claims = verify_google_login(payload.into(), state.config.google_config.client_id.clone())
         .await
         .map_err(ApiError::Auth)?;
     let tokens =

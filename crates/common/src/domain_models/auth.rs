@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::common_enums;
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub struct GoogleUserClaims {
     #[serde(rename = "sub")]
     pub google_user_id: String,

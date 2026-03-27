@@ -6,14 +6,14 @@ use sqlx::PgPool;
 
 pub async fn user_auth_core(
     app_state: &PgPool,
-    app_configs: runtime_config::RuntimeConfig,
+    app_configs: &runtime_config::RuntimeConfig,
     session_id: String,
     user_id: String,
 ) -> Result<domain_models::auth::TokenPair, error_stack::Report<errors::AuthErrorTypes>> {
     let access_token = jwt::generate_access_tokens(
         user_id.clone(),
         session_id,
-        app_configs.admin_api_key.clone(),
+        app_configs.jwt_secret.clone(),
     )?;
     let refresh_token = token::generate_refresh_token();
     create_session(app_state, user_id, refresh_token.clone()).await?;
@@ -39,7 +39,7 @@ pub async fn user_login(
         .await?;
     let user = user.ok_or(errors::AuthErrorTypes::UserNotFound)?;
     let session_id = uuid::Uuid::new_v4().to_string();
-    let tokens = user_auth_core(app_state, app_configs, session_id, user.id).await?;
+    let tokens = user_auth_core(app_state, &app_configs, session_id, user.id).await?;
     Ok(tokens)
 }
 
@@ -48,7 +48,7 @@ pub async fn user_sign_up(
     app_configs: runtime_config::RuntimeConfig,
     claims: domain_models::auth::GoogleUserClaims,
 ) -> Result<domain_models::auth::TokenPair, error_stack::Report<errors::AuthErrorTypes>> {
-    let user_data = domain_models::auth::UserData::from(claims);
+    let user_data = domain_models::auth::UserData::from(claims.clone());
     let user = app_state
         .find_user_by_provider_identity(
             &user_data.auth_provider.to_string(),
@@ -59,10 +59,9 @@ pub async fn user_sign_up(
     if user.is_some() {
         return Err(errors::AuthErrorTypes::UserAlreadyRegistered.into());
     }
-    let user_id = uuid::Uuid::new_v4().to_string();
+    let user = create_user(app_state, &claims, &app_configs).await?;
     let session_id = uuid::Uuid::new_v4().to_string();
-    let tokens = user_auth_core(app_state, app_configs, session_id, user_id).await?;
-
+    let tokens = user_auth_core(app_state, &app_configs, session_id, user.id).await?;
     Ok(tokens)
 }
 
@@ -90,4 +89,34 @@ pub async fn create_session(
     let session_output = pool.create_session(session).await?;
 
     Ok(session_output)
+}
+
+pub async fn create_user(
+    pool: &PgPool,
+    claims: &domain_models::auth::GoogleUserClaims,
+    app_configs: &runtime_config::RuntimeConfig,
+) -> Result<domain_models::auth::UserData, error_stack::Report<errors::AuthErrorTypes>> {
+    let user_id = uuid::Uuid::new_v4().to_string();
+    let now = time::OffsetDateTime::now_utc();
+
+    let user_data = domain_models::auth::UserData {
+        id: user_id,
+        auth_provider: common::common_enums::AuthProvider::Google,
+        auth_provider_user_id: claims.google_user_id.clone(),
+        name: claims.name.clone(),
+        email: claims.email.clone(),
+        is_email_verified: claims.email_verified.unwrap_or(false),
+        phone: None,
+        is_phone_verified: false,
+        picture_url: claims.picture.clone(),
+        status: common::common_enums::UserAccountStatus::Active,
+        created_at: now,
+        updated_at: now,
+    };
+
+    let user_output = pool
+        .create_user(user_data, &app_configs.admin_api_key)
+        .await?;
+
+    Ok(user_output)
 }

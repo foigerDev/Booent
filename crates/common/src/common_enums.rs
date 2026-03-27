@@ -57,6 +57,14 @@ pub enum UserAccountStatus {
     Inactive,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, EnumString, Display, Type)]
+#[sqlx(type_name = "text")]
+#[strum(serialize_all = "snake_case")]
+pub enum HotelStatus {
+    Active,
+    Inactive,
+}
+
 #[derive(Debug, Serialize, Deserialize)]
 pub enum Role {
     Admin,

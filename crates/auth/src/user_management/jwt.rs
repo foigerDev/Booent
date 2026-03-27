@@ -1,39 +1,42 @@
-use common::{consts, domain_models::auth, errors};
+use common::common_enums::Role;
+use common::domain_models::{auth, common as common_domain_models};
+use common::{consts, errors};
 use error_stack::{Report, ResultExt};
 use jsonwebtoken::{decode, DecodingKey, Validation};
 use secrecy::{ExposeSecret, Secret};
 
-fn _verify_access_token(
-    jwt_token: Secret<String>,
+pub fn verify_access_token(
+    jwt_token: String,
     secret: Secret<String>,
-) -> Result<auth::GoogleUserClaims, Report<errors::AuthErrorTypes>> {
+) -> Result<common_domain_models::RequestContext, Report<errors::AuthErrorTypes>> {
     let unmasked_secret = secret.expose_secret();
-    let token: &String = jwt_token.expose_secret();
 
     let mut validation = Validation::default();
     validation.set_issuer(&[consts::ISSUER]);
     validation.set_audience(&[consts::AUDIENCE]);
 
-    let decoded = decode::<auth::GoogleUserClaims>(
-        token,
+    let decoded = decode::<auth::AccessToken>(
+        jwt_token,
         &DecodingKey::from_secret(unmasked_secret.as_bytes()),
         &validation,
     )
     .change_context(errors::AuthErrorTypes::InvalidToken)?;
 
-    Ok(decoded.claims)
+    Ok(common_domain_models::RequestContext {
+        user_id: decoded.claims.sub,
+    })
 }
 
 pub fn generate_access_tokens(
     user_id: String,
     session_id: String,
     jwt_secret: Secret<String>,
-) -> Result<Secret<String>, error_stack::Report<errors::AuthErrorTypes>> {
+) -> Result<Secret<String>, Report<errors::AuthErrorTypes>> {
     let now = time::OffsetDateTime::now_utc();
 
     let access_expiry = now + time::Duration::minutes(consts::MAX_ACCESS_TOKEN_VALIDITY_IN_MINUTES);
 
-    let claims = common::domain_models::auth::AccessToken {
+    let claims = auth::AccessToken {
         iss: consts::ISSUER.to_string(),
         sub: user_id,
         sid: session_id,
@@ -41,7 +44,7 @@ pub fn generate_access_tokens(
         exp: access_expiry,
         iat: now,
         nbf: now,
-        role: common::common_enums::Role::Admin,
+        role: Role::Admin,
     };
 
     let access_token = jsonwebtoken::encode(

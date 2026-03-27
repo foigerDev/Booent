@@ -27,6 +27,8 @@ bookings = { path = "../../crates/bookings" }
 billing = { path = "../../crates/billing" }
 search = { path = "../../crates/search" }
 admin = { path = "../../crates/admin" }
+
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 cookie = { version = "0.18", features = ["secure"] }
+time = { version = "0.3", features = ["serde"] }

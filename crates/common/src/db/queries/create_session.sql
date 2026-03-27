@@ -6,23 +6,13 @@ INSERT INTO sessions (
     ip_address,
     expires_at,
     revoked
+) VALUES (
+    $1,  -- id
+    $2,  -- user_id
+    $3,  -- refresh_token_hash
+    $4,  -- user_agent
+    $5,  -- ip_address
+    $6,  -- expires_at
+    $7   -- revoked
 )
-VALUES (
-    $1,
-    $2,
-    $3,
-    $4,
-    $5,
-    $6,
-    $7
-)
-RETURNING
-    id,
-    user_id,
-    refresh_token_hash,
-    user_agent,
-    ip_address,
-    expires_at,
-    revoked,
-    created_at,
-    updated_at;
+RETURNING *;
