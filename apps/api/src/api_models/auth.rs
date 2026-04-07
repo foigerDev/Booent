@@ -27,3 +27,11 @@ impl From<auth::TokenPair> for LoginResponse {
         }
     }
 }
+
+impl From<(secrecy::Secret<String>, secrecy::Secret<String>)> for LoginResponse {
+    fn from(tokens: (secrecy::Secret<String>, secrecy::Secret<String>)) -> Self {
+        Self {
+            access_token: tokens.0.expose_secret().clone(),
+        }
+    }
+}

@@ -32,3 +32,4 @@ tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 cookie = { version = "0.18", features = ["secure"] }
 time = { version = "0.3", features = ["serde"] }
+axum-extra = { version = "0.9", features = ["cookie"] }

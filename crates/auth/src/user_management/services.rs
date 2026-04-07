@@ -1,6 +1,6 @@
 use crate::user_management::{jwt, token};
 use common::db::{sessions_interface::SessionRepository, users_interface::UserRepository};
-use common::{domain_models, errors};
+use common::{consts, domain_models, errors};
 use secrecy::{ExposeSecret, Secret};
 use sqlx::PgPool;
 
@@ -119,5 +119,34 @@ pub async fn create_user(
         .await?;
 
     Ok(user_output)
+}
+
+pub async fn refresh_tokens(
+    pool: &PgPool,
+    refresh_token: &str,
+    jwt_secret: Secret<String>,
+) -> Result<domain_models::auth::TokenPair, error_stack::Report<errors::AuthErrorTypes>> {
+    let token_hash = token::hash_refresh_token(refresh_token);
+    println!("Token hash: {}", token_hash);
+    let new_refresh_token = token::generate_refresh_token();
+    let new_token_hash = token::hash_refresh_token(new_refresh_token.expose_secret());
+
+    let new_expiry = time::OffsetDateTime::now_utc()
+        + time::Duration::minutes(consts::MAX_REFRESH_TOKEN_VALIDITY_IN_MINUTES);
+
+    let session = pool
+        .update_session_by_hash(&token_hash, &new_token_hash, new_expiry)
+        .await?;
+
+    let access_token = jwt::generate_access_tokens(
+        session.user_id.clone(),
+        session.id.clone(),
+        jwt_secret,
+    )?;
+
+    Ok(domain_models::auth::TokenPair {
+        access_token,
+        refresh_token: new_refresh_token,
+    })
 }
 

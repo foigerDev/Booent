@@ -1,11 +1,13 @@
 use crate::{api_models::auth as api_models_auth, app_state::AppState, utils};
 use auth::user_management::verifiers::verify_google_login;
+use axum::extract::State;
 use axum::{
-    extract::State,
     http::{header::SET_COOKIE, HeaderMap, StatusCode},
     response::IntoResponse,
     Json,
 };
+use axum_extra::extract::CookieJar;
+use common::consts;
 use common::errors::ApiError;
 use secrecy::ExposeSecret;
 use std::sync::Arc;
@@ -66,4 +68,30 @@ pub async fn signup(
     Ok(response)
 }
 
+pub async fn refresh(
+    State(state): State<Arc<AppState>>,
+    cookies: CookieJar,
+) -> Result<impl IntoResponse, ApiError> {
+    let refresh_token = cookies
+        .get(consts::REFRESH_TOKEN_COOKIE_NAME)
+        .map(|cookie: &cookie::Cookie| cookie.value().to_string())
+        .ok_or(ApiError::Auth(
+            common::errors::AuthErrorTypes::RefreshTokenInvalid.into(),
+        ))?;
 
+    let tokens = auth::user_management::services::refresh_tokens(&state.db, &refresh_token, state.config.jwt_secret.clone())
+        .await
+        .map_err(ApiError::Auth)?;
+
+    let cookie = utils::build_refresh_token_cookie(tokens.refresh_token.expose_secret());
+    let response_body = api_models_auth::LoginResponse::from(tokens);
+
+    let mut response = Json(response_body).into_response();
+    response
+        .headers_mut()
+        .append(SET_COOKIE, cookie.to_string().parse().unwrap());
+
+    *response.status_mut() = StatusCode::OK;
+
+    Ok(response)
+}

@@ -19,6 +19,7 @@ pub enum AuthErrorTypes {
     ApiAuthorizationFailed,
     UserAlreadyRegistered,
     UserNotFound,
+    RefreshTokenInvalid,
 }
 
 impl fmt::Display for AuthErrorTypes {
@@ -42,6 +43,7 @@ impl fmt::Display for AuthErrorTypes {
                 write!(f, "User already registered! Please loggin")
             }
             AuthErrorTypes::UserNotFound => write!(f, "User not found"),
+            AuthErrorTypes::RefreshTokenInvalid => write!(f, "Invalid or expired refresh token"),
         }
     }
 }
@@ -133,6 +135,7 @@ impl IntoResponse for ApiError {
                     AuthErrorTypes::ApiAuthorizationFailed => StatusCode::UNAUTHORIZED,
                     AuthErrorTypes::UserAlreadyRegistered => StatusCode::BAD_REQUEST,
                     AuthErrorTypes::UserNotFound => StatusCode::NOT_FOUND,
+                    AuthErrorTypes::RefreshTokenInvalid => StatusCode::UNAUTHORIZED,
                 };
 
                 let body = ErrorResponse {

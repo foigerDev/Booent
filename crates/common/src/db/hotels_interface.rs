@@ -1,7 +1,6 @@
 use crate::{db::models::{hotels, hotel_users}, domain_models, errors};
 use async_trait::async_trait;
 use error_stack::ResultExt;
-use time::Time;
 
 fn slugify(name: &str) -> String {
     name
