@@ -39,7 +39,7 @@ impl fmt::Display for AuthErrorTypes {
             AuthErrorTypes::GoogleEmailNotVerified => write!(f, "Email not verified"),
             AuthErrorTypes::ApiAuthorizationFailed => write!(f, "Unauthorized access"),
             AuthErrorTypes::UserAlreadyRegistered => {
-                write!(f, "User already registered! Please logging in")
+                write!(f, "User already registered! Please loggin")
             }
             AuthErrorTypes::UserNotFound => write!(f, "User not found"),
         }

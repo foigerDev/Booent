@@ -65,8 +65,11 @@ pub struct AccessToken {
     pub iss: String,
     pub aud: String,
     pub role: common_enums::Role,
+    #[serde(with = "time::serde::timestamp")]
     pub exp: time::OffsetDateTime,
+    #[serde(with = "time::serde::timestamp")]
     pub iat: time::OffsetDateTime,
+    #[serde(with = "time::serde::timestamp")]
     pub nbf: time::OffsetDateTime,
 }
 

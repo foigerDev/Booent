@@ -120,3 +120,4 @@ pub async fn create_user(
 
     Ok(user_output)
 }
+

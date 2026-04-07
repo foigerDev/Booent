@@ -1,6 +1,7 @@
-use crate::{db::models::hotels, domain_models, errors};
+use crate::{db::models::{hotels, hotel_users}, domain_models, errors};
 use async_trait::async_trait;
 use error_stack::ResultExt;
+use time::Time;
 
 fn slugify(name: &str) -> String {
     name
@@ -25,6 +26,12 @@ pub trait HotelRepository {
         name: &str,
         email: &str,
     ) -> Result<Option<domain_models::hotels::HotelData>, error_stack::Report<errors::HotelErrorTypes>>;
+
+    async fn add_user_to_hotel(
+        &self,
+        user_id: &str,
+        hotel_id: uuid::Uuid,
+    ) -> Result<(), error_stack::Report<errors::HotelErrorTypes>>;
 
 }
 
@@ -59,7 +66,7 @@ impl HotelRepository for sqlx::PgPool {
         .change_context(errors::HotelErrorTypes::InternalServerError)?;
 
         let hotels_output = hotels.into_domain_model()
-            .map_err(|e| error_stack::Report::new(errors::HotelErrorTypes::InternalServerError))?;
+            .map_err(|_|error_stack::Report::new(errors::HotelErrorTypes::InternalServerError))?;
 
         Ok(hotels_output)
     }
@@ -86,5 +93,24 @@ impl HotelRepository for sqlx::PgPool {
             .change_context(errors::HotelErrorTypes::InternalServerError)?;
 
         Ok(hotel_data)
+    }
+
+    async fn add_user_to_hotel(
+        &self,
+        user_id: &str,
+        hotel_id: uuid::Uuid,
+    ) -> Result<(), error_stack::Report<errors::HotelErrorTypes>> {
+        let _ = sqlx::query_file_as!(
+            hotel_users::HotelUsersRow,
+            "src/db/queries/create_hotel_user.sql",
+            user_id,
+            hotel_id
+        )
+        .fetch_one(self)
+        .await
+        .attach_printable("Database error while adding user to hotel")
+        .change_context(errors::HotelErrorTypes::InternalServerError)?;
+
+        Ok(())
     }
 }

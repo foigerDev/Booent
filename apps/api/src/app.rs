@@ -19,6 +19,6 @@ pub fn build_app(state: Arc<crate::app_state::AppState>) -> Router {
     Router::new()
         .route("/health", get(health::health_check))
         .nest("/user", user_routes)
-        .nest("/hotels", hotel_routes)
+        .nest("/hotel", hotel_routes)
         .with_state(state)
 }

@@ -1,8 +1,6 @@
-use serde::ser;
+use crate::common_enums;
 use time::{OffsetDateTime, Time};
 use uuid::Uuid;
-use crate::common_enums;
-
 
 #[derive(Debug, Clone)]
 pub struct HotelCreateRequest {
@@ -19,7 +17,7 @@ pub struct HotelCreateRequest {
     pub check_out_time: Option<Time>,
 
     pub logo_url: Option<String>,
-    pub cover_image_url: String,
+    pub cover_image_url: Option<String>,
 }
 
 #[derive(Debug, Clone)]
@@ -40,7 +38,7 @@ pub struct HotelData {
 
     // Branding
     pub logo_url: Option<String>,
-    pub cover_image_url: String,
+    pub cover_image_url: Option<String>,
 
     pub status: common_enums::HotelStatus,
 

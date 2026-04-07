@@ -9,4 +9,8 @@
 
 ### Auth
 Complete the refresh token flow
+Email should be fetched from user
+
+### Decisions
+1. Make default hotel status as inavtive ?
 

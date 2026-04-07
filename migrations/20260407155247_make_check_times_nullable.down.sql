@@ -1,0 +1,2 @@
+ALTER TABLE hotels ALTER COLUMN check_in_time SET NOT NULL;
+ALTER TABLE hotels ALTER COLUMN check_out_time SET NOT NULL;

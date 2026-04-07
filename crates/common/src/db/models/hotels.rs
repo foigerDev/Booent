@@ -17,7 +17,7 @@ pub struct HotelsRow {
     pub check_in_time: Option<time::Time>,
     pub check_out_time: Option<time::Time>,
     pub logo_url: Option<String>,
-    pub cover_image_url: String,
+    pub cover_image_url: Option<String>,
     pub status: String,
     pub created_at: time::OffsetDateTime,
     pub updated_at: time::OffsetDateTime,

@@ -51,8 +51,8 @@ impl UserRepository for sqlx::PgPool {
 
         Ok(user_data)
     }
-    
     async fn find_user_by_user_id(
+        
         &self,
        user_id: &str,
        encryption_key: &Secret<String>,

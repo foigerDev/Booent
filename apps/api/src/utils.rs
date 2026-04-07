@@ -4,7 +4,6 @@ use common::{
     errors::{ApiError, AuthErrorTypes},
 };
 use cookie::{time::Duration, Cookie, SameSite};
-use error_stack::ResultExt;
 
 
 pub fn build_refresh_token_cookie(token: &str) -> Cookie<'static> {
@@ -44,7 +43,7 @@ impl HeaderMapExt for HeaderMap {
     fn extract_access_token_from_header(&self) -> Result<String, ApiError> {
         let bearer_token =   self.get(consts::AUTHORIZATION)
         .ok_or(ApiError::Auth(AuthErrorTypes::ApiAuthorizationFailed.into()))?
-        .to_str()
+                .to_str()
         .map_err(|_| ApiError::Auth(AuthErrorTypes::ApiAuthorizationFailed.into()))?;
 
         let access_token = bearer_token.strip_prefix("Bearer ").ok_or(ApiError::Auth(
