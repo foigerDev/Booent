@@ -60,6 +60,7 @@ pub enum UserAccountStatus {
 #[derive(Debug, Clone, PartialEq, Eq, EnumString, Display, Type, Deserialize, Serialize)]
 #[sqlx(type_name = "text")]
 #[strum(serialize_all = "snake_case")]
+ #[serde(rename_all = "snake_case")]
 pub enum HotelStatus {
     Active,
     Inactive,

@@ -71,6 +71,7 @@ impl Context for EncryptionErrorTypes {}
 pub enum HotelErrorTypes {
     HotelCreationFailed,
     HotelAlreadyExists,
+    HotelNotFound,
     InternalServerError,
 }
 
@@ -79,6 +80,7 @@ impl fmt::Display for HotelErrorTypes {
         match self {
             HotelErrorTypes::HotelCreationFailed => write!(f, "Hotel creation failed"),
             HotelErrorTypes::HotelAlreadyExists => write!(f, "Hotel already registered"),
+            HotelErrorTypes::HotelNotFound => write!(f, "Hotel not found"),
             HotelErrorTypes::InternalServerError => write!(f, "Internal server error"),
         }
     }
@@ -170,6 +172,7 @@ impl IntoResponse for ApiError {
                 let status = match err {
                     HotelErrorTypes::HotelCreationFailed => StatusCode::INTERNAL_SERVER_ERROR,
                     HotelErrorTypes::HotelAlreadyExists => StatusCode::CONFLICT,
+                    HotelErrorTypes::HotelNotFound => StatusCode::NOT_FOUND,
                     HotelErrorTypes::InternalServerError => StatusCode::INTERNAL_SERVER_ERROR,
                 };
 

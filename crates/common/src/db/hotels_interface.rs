@@ -32,6 +32,12 @@ pub trait HotelRepository {
         hotel_id: uuid::Uuid,
     ) -> Result<(), error_stack::Report<errors::HotelErrorTypes>>;
 
+    async fn update_hotel_status(
+        &self,
+        hotel_id: uuid::Uuid,
+        status: &str,
+    ) -> Result<domain_models::hotels::HotelData, error_stack::Report<errors::HotelErrorTypes>>;
+
 }
 
 #[async_trait]
@@ -111,5 +117,28 @@ impl HotelRepository for sqlx::PgPool {
         .change_context(errors::HotelErrorTypes::InternalServerError)?;
 
         Ok(())
+    }
+
+    async fn update_hotel_status(
+        &self,
+        hotel_id: uuid::Uuid,
+        status: &str,
+    ) -> Result<domain_models::hotels::HotelData, error_stack::Report<errors::HotelErrorTypes>> {
+        let hotel = sqlx::query_file_as!(
+            hotels::HotelsRow,
+            "src/db/queries/update_hotel_status.sql",
+            status,
+            hotel_id,
+        )
+        .fetch_optional(self)
+        .await
+        .attach_printable("Database error while updating hotel status")
+        .change_context(errors::HotelErrorTypes::InternalServerError)?;
+
+        match hotel {
+            Some(h) => h.into_domain_model()
+                .map_err(|_| error_stack::Report::new(errors::HotelErrorTypes::InternalServerError)),
+            None => Err(error_stack::Report::new(errors::HotelErrorTypes::HotelNotFound)),
+        }
     }
 }
