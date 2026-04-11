@@ -1,0 +1,1 @@
+ALTER TABLE amenities DROP CONSTRAINT unique_category_display_order;

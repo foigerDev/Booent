@@ -19,6 +19,8 @@ pub struct HotelsRow {
     pub logo_url: Option<String>,
     pub cover_image_url: Option<String>,
     pub status: String,
+    pub instagram_url: Option<String>,
+    pub whatsapp_number: Option<String>,
     pub created_at: time::OffsetDateTime,
     pub updated_at: time::OffsetDateTime,
 }
@@ -46,6 +48,8 @@ impl HotelsRow {
             check_out_time: self.check_out_time,
             logo_url: self.logo_url.clone(),
             cover_image_url: self.cover_image_url.clone(),
+            instagram_url: self.instagram_url.clone(),
+            whatsapp_number: self.whatsapp_number.clone(),
             status,
             created_at: self.created_at,
             updated_at: self.updated_at,

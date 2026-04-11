@@ -14,6 +14,8 @@ SELECT
     check_out_time,
     logo_url,
     cover_image_url,
+    instagram_url,
+    whatsapp_number,
     status,
     created_at,
     updated_at

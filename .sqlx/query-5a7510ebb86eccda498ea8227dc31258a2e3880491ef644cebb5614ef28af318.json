@@ -92,6 +92,16 @@
         "ordinal": 17,
         "name": "updated_at",
         "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 18,
+        "name": "instagram_url",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 19,
+        "name": "whatsapp_number",
+        "type_info": "Text"
       }
     ],
     "parameters": {
@@ -130,7 +140,9 @@
       true,
       false,
       false,
-      false
+      false,
+      true,
+      true
     ]
   },
   "hash": "5a7510ebb86eccda498ea8227dc31258a2e3880491ef644cebb5614ef28af318"

@@ -39,6 +39,8 @@ pub struct HotelData {
     // Branding
     pub logo_url: Option<String>,
     pub cover_image_url: Option<String>,
+    pub instagram_url: Option<String>,
+    pub whatsapp_number: Option<String>,
 
     pub status: common_enums::HotelStatus,
 
