@@ -60,7 +60,7 @@ pub enum UserAccountStatus {
 #[derive(Debug, Clone, PartialEq, Eq, EnumString, Display, Type, Deserialize, Serialize)]
 #[sqlx(type_name = "text")]
 #[strum(serialize_all = "snake_case")]
- #[serde(rename_all = "snake_case")]
+#[serde(rename_all = "snake_case")]
 pub enum HotelStatus {
     Active,
     Inactive,
@@ -69,4 +69,20 @@ pub enum HotelStatus {
 #[derive(Debug, Serialize, Deserialize)]
 pub enum Role {
     Admin,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, EnumString, Display, Type, Deserialize, Serialize)]
+#[sqlx(type_name = "text")]
+#[strum(serialize_all = "snake_case")]
+#[serde(rename_all = "snake_case")]
+pub enum AmenityCategory {
+    Basic,
+    Services,
+    FoodDrink,
+    SafetySecurity,
+    Wellness,
+    Business,
+    RoomFeatures,
+    Bathroom,
+    Views,
 }
