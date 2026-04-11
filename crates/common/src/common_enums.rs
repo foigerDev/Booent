@@ -86,3 +86,37 @@ pub enum AmenityCategory {
     Bathroom,
     Views,
 }
+
+#[derive(Debug, Clone, PartialEq, Eq, EnumString, Display, Type, Deserialize, Serialize)]
+#[sqlx(type_name = "text")]
+#[strum(serialize_all = "snake_case")]
+#[serde(rename_all = "snake_case")]
+pub enum HotelAmenity {
+    Wifi,
+    AirConditioning,
+    PowerBackup,
+    Elevator,
+    RoomService,
+    Laundry,
+    FrontDesk24hr,
+    Housekeeping,
+    Restaurant,
+    BreakfastIncluded,
+    Bar,
+    Cctv,
+    Security24hr,
+    SwimmingPool,
+    Gym,
+    Spa,
+    ConferenceRoom,
+    BanquetHall,
+    Television,
+    MiniFridge,
+    WorkDesk,
+    Wardrobe,
+    Bathtub,
+    HotWater,
+    Balcony,
+    CityView,
+    MountainView,
+}
