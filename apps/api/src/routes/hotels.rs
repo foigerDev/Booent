@@ -15,7 +15,7 @@ pub async fn hotel_create(
     headers: axum::http::HeaderMap,
     Json(payload): Json<api_models_hotels::HotelCreateRequest>,
 ) -> Result<impl IntoResponse, ApiError> {
-    let request_context = middleware::middleware(state.config.clone(), headers)?;
+    let request_context = middleware::middleware(&state.db, state.config.clone(), headers).await?;
     let _user = state.db.find_user_by_user_id(&request_context.user_id, &state.config.admin_api_key).await.change_context
     (errors::AuthErrorTypes::UserNotFound).map_err(ApiError::Auth)?;
     let hotel_response = hotels::services::create_hotel(&state.db, payload.into()).await.map_err(ApiError::Hotel)?;
@@ -23,7 +23,7 @@ pub async fn hotel_create(
         let response_body = api_models_hotels::HotelCreateResponse::from(hotel_response);
 
     let mut response = Json(response_body).into_response();
-    *response.status_mut() = StatusCode::OK;
+    *response.status_mut() = StatusCode::CREATED;
 
     Ok(response)
 }

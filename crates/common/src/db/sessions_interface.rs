@@ -9,6 +9,11 @@ pub trait SessionRepository {
         session_data: domain_models::auth::SessionData,
     ) -> Result<domain_models::auth::SessionData, error_stack::Report<errors::AuthErrorTypes>>;
 
+    async fn find_session_by_id(
+        &self,
+        session_id: &str,
+    ) -> Result<Option<domain_models::auth::SessionData>, error_stack::Report<errors::AuthErrorTypes>>;
+
     async fn update_session(
         &self,
         session_id: &str,
@@ -52,6 +57,26 @@ impl SessionRepository for sqlx::PgPool {
         let sessions_output = sessions.into_domain_model()?;
 
         Ok(sessions_output)
+    }
+
+    async fn find_session_by_id(
+        &self,
+        session_id: &str,
+    ) -> Result<Option<domain_models::auth::SessionData>, error_stack::Report<errors::AuthErrorTypes>> {
+        let session = sqlx::query_file_as!(
+            sessions::SessionRow,
+            "src/db/queries/find_session_by_id.sql",
+            session_id,
+        )
+        .fetch_optional(self)
+        .await
+        .attach_printable("Database error while finding session by id")
+        .change_context(errors::AuthErrorTypes::InternalServerError)?;
+
+        match session {
+            Some(s) => s.into_domain_model().map(Some),
+            None => Ok(None),
+        }
     }
 
     async fn update_session(

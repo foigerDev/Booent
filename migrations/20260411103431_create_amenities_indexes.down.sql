@@ -1,0 +1,2 @@
+DROP INDEX idx_hotel_amenities_hotel;
+DROP INDEX idx_hotel_amenities_amenity;

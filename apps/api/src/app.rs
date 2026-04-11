@@ -13,7 +13,8 @@ pub fn build_app(state: Arc<crate::app_state::AppState>) -> Router {
         .with_state(state.clone());
 
     let hotel_routes = Router::new()
-        .route("/", post(hotels::hotel_create).get(hotels::hotel_create))
+        .route("/", post(hotels::hotel_create))
+        // .route("/", get(hotels::hotel_list))
         // .route("/:hotel_id", get(hotels::hotel_retrieve))
         .with_state(state.clone());
 

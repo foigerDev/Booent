@@ -5,6 +5,13 @@ version = 4
 [[package]]
 name = "admin"
 version = "0.1.0"
+dependencies = [
+ "common",
+ "error-stack",
+ "sqlx",
+ "time",
+ "uuid",
+]
 
 [[package]]
 name = "aead"
@@ -95,10 +102,12 @@ dependencies = [
  "secrecy",
  "serde",
  "sqlx",
+ "subtle",
  "time",
  "tokio",
  "tracing",
  "tracing-subscriber",
+ "uuid",
 ]
 
 [[package]]
@@ -142,6 +151,7 @@ dependencies = [
  "error-stack",
  "hex",
  "jsonwebtoken",
+ "lazy_static",
  "log",
  "pii",
  "rand 0.8.5",
@@ -152,6 +162,7 @@ dependencies = [
  "sha2",
  "sqlx",
  "time",
+ "tokio",
  "uuid",
 ]
 

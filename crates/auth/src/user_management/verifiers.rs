@@ -5,12 +5,19 @@ use error_stack::ResultExt;
 use jsonwebtoken::{decode, decode_header, Algorithm, DecodingKey, Validation};
 use secrecy::ExposeSecret;
 use serde::Deserialize;
+use std::sync::Arc;
+use tokio::sync::RwLock;
 
 const GOOGLE_CERT_ENDPOINT: &str = "https://www.googleapis.com/oauth2/v3/certs";
 const GOOGLE_ISSUER_ENDPOINT: &str = "https://accounts.google.com";
 const GOOGLE_ISSUER_DOMAIN: &str = "accounts.google.com";
+const JWKS_CACHE_TTL_SECONDS: i64 = 3600;
 
-pub async fn fetch_google_jwks() -> Result<Jwks, error_stack::Report<AuthErrorTypes>> {
+lazy_static::lazy_static! {
+    static ref JWKS_CACHE: Arc<RwLock<Option<(Jwks, time::OffsetDateTime)>>> = Arc::new(RwLock::new(None));
+}
+
+async fn fetch_google_jwks_internal() -> Result<Jwks, error_stack::Report<AuthErrorTypes>> {
     let jwks: Jwks = reqwest::get(GOOGLE_CERT_ENDPOINT)
         .await
         .change_context(AuthErrorTypes::GoogleKeysFetchFailed)?
@@ -18,6 +25,25 @@ pub async fn fetch_google_jwks() -> Result<Jwks, error_stack::Report<AuthErrorTy
         .await
         .change_context(AuthErrorTypes::InternalServerError)?;
 
+    Ok(jwks)
+}
+
+pub async fn fetch_google_jwks() -> Result<Jwks, error_stack::Report<AuthErrorTypes>> {
+    let cache = JWKS_CACHE.read().await;
+    
+    if let Some((jwks, cached_at)) = cache.as_ref() {
+        let ttl = time::Duration::seconds(JWKS_CACHE_TTL_SECONDS);
+        if *cached_at + ttl > time::OffsetDateTime::now_utc() {
+            return Ok(jwks.clone());
+        }
+    }
+    drop(cache);
+
+    let jwks = fetch_google_jwks_internal().await?;
+    
+    let mut cache = JWKS_CACHE.write().await;
+    *cache = Some((jwks.clone(), time::OffsetDateTime::now_utc()));
+    
     Ok(jwks)
 }
 
@@ -68,14 +94,14 @@ pub async fn verify_google_login(
     Ok(claims)
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub struct Jwk {
     pub kid: String,
     pub n: String,
     pub e: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub struct Jwks {
     pub keys: Vec<Jwk>,
 }

@@ -24,12 +24,14 @@ pub fn verify_access_token(
 
     Ok(common_domain_models::RequestContext {
         user_id: decoded.claims.sub,
+        session_id: decoded.claims.sid,
     })
 }
 
 pub fn generate_access_tokens(
     user_id: String,
     session_id: String,
+    role: Role,
     jwt_secret: Secret<String>,
 ) -> Result<Secret<String>, Report<errors::AuthErrorTypes>> {
     let now = time::OffsetDateTime::now_utc();
@@ -44,7 +46,7 @@ pub fn generate_access_tokens(
         exp: access_expiry,
         iat: now,
         nbf: now,
-        role: Role::Admin,
+        role,
     };
 
     let access_token = jsonwebtoken::encode(

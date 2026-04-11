@@ -1,6 +1,7 @@
 use crate::user_management::{jwt, token};
 use common::db::{sessions_interface::SessionRepository, users_interface::UserRepository};
 use common::{consts, domain_models, errors};
+use common::common_enums::Role;
 use secrecy::{ExposeSecret, Secret};
 use sqlx::PgPool;
 
@@ -9,10 +10,12 @@ pub async fn user_auth_core(
     app_configs: &runtime_config::RuntimeConfig,
     session_id: String,
     user_id: String,
+    role: Role,
 ) -> Result<domain_models::auth::TokenPair, error_stack::Report<errors::AuthErrorTypes>> {
     let access_token = jwt::generate_access_tokens(
         user_id.clone(),
         session_id,
+        role,
         app_configs.jwt_secret.clone(),
     )?;
     let refresh_token = token::generate_refresh_token();
@@ -39,7 +42,7 @@ pub async fn user_login(
         .await?;
     let user = user.ok_or(errors::AuthErrorTypes::UserNotFound)?;
     let session_id = uuid::Uuid::new_v4().to_string();
-    let tokens = user_auth_core(app_state, &app_configs, session_id, user.id).await?;
+    let tokens = user_auth_core(app_state, &app_configs, session_id, user.id, Role::Admin).await?;
     Ok(tokens)
 }
 
@@ -61,7 +64,7 @@ pub async fn user_sign_up(
     }
     let user = create_user(app_state, &claims, &app_configs).await?;
     let session_id = uuid::Uuid::new_v4().to_string();
-    let tokens = user_auth_core(app_state, &app_configs, session_id, user.id).await?;
+    let tokens = user_auth_core(app_state, &app_configs, session_id, user.id, Role::Admin).await?;
     Ok(tokens)
 }
 
@@ -127,7 +130,6 @@ pub async fn refresh_tokens(
     jwt_secret: Secret<String>,
 ) -> Result<domain_models::auth::TokenPair, error_stack::Report<errors::AuthErrorTypes>> {
     let token_hash = token::hash_refresh_token(refresh_token);
-    println!("Token hash: {}", token_hash);
     let new_refresh_token = token::generate_refresh_token();
     let new_token_hash = token::hash_refresh_token(new_refresh_token.expose_secret());
 
@@ -141,6 +143,7 @@ pub async fn refresh_tokens(
     let access_token = jwt::generate_access_tokens(
         session.user_id.clone(),
         session.id.clone(),
+        Role::Admin,
         jwt_secret,
     )?;
 

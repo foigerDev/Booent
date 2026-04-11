@@ -1,4 +1,4 @@
 pub struct RequestContext {
     pub user_id: String,
-    // later add role 
+    pub session_id: String,
 }
