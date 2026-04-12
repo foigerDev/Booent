@@ -1,0 +1,3 @@
+ALTER TABLE room_types
+ADD COLUMN bed_type TEXT,
+ADD COLUMN bed_count INT DEFAULT 1;

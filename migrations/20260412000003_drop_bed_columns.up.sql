@@ -1,0 +1,3 @@
+ALTER TABLE room_types
+DROP COLUMN IF EXISTS bed_type,
+DROP COLUMN IF EXISTS bed_count;
