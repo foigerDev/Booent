@@ -1,4 +1,4 @@
-use crate::routes::{admin, auth, health, hotels};
+use crate::routes::{admin, amenities, auth, health, hotels};
 use axum::{
     routing::{get, post, put},
     Router,
@@ -15,6 +15,7 @@ pub fn build_app(state: Arc<crate::app_state::AppState>) -> Router {
     let hotel_routes = Router::new()
         .route("/", post(hotels::hotel_create))
         .route("/:hotel_id", put(hotels::hotel_update))
+        .route("/amenities", get(amenities::get_hotel_amenities))
         // .route("/", get(hotels::hotel_list))
         // .route("/:hotel_id", get(hotels::hotel_retrieve))
         .with_state(state.clone());

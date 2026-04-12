@@ -1,3 +1,4 @@
+pub mod cache;
 pub mod common_enums;
 pub mod consts;
 pub mod db;

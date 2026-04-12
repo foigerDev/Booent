@@ -72,3 +72,30 @@ impl HotelsRow {
         })
     }
 }
+
+#[derive(Debug, FromRow)]
+pub struct AmenitiesRow {
+    pub id: Option<uuid::Uuid>,
+    pub name: Option<String>,
+    pub slug: Option<String>,
+    pub category_id: Option<uuid::Uuid>,
+    pub category_name: Option<String>,
+    pub category_slug: Option<String>,
+    pub icon: Option<String>,
+    pub display_order: Option<i32>,
+}
+
+impl AmenitiesRow {
+    pub fn into_domain_model(self) -> domain_models::hotels::AmenityData {
+        domain_models::hotels::AmenityData {
+            id: self.id.unwrap_or_default(),
+            name: self.name.unwrap_or_default(),
+            slug: self.slug.unwrap_or_default(),
+            category_id: self.category_id.unwrap_or_default(),
+            category_name: self.category_name.unwrap_or_default(),
+            category_slug: self.category_slug.unwrap_or_default(),
+            icon: self.icon,
+            display_order: self.display_order.unwrap_or(0),
+        }
+    }
+}

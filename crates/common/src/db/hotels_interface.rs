@@ -44,6 +44,10 @@ pub trait HotelRepository {
         hotel_data: domain_models::hotels::HotelUpdateRequest,
     ) -> Result<domain_models::hotels::HotelData, error_stack::Report<errors::HotelErrorTypes>>;
 
+    async fn get_hotel_amenities(
+        &self,
+    ) -> Result<Vec<domain_models::hotels::AmenityData>, error_stack::Report<errors::HotelErrorTypes>>;
+
 }
 
 #[async_trait]
@@ -182,5 +186,20 @@ impl HotelRepository for sqlx::PgPool {
                 .map_err(|_| error_stack::Report::new(errors::HotelErrorTypes::InternalServerError)),
             None => Err(error_stack::Report::new(errors::HotelErrorTypes::HotelNotFound)),
         }
+    }
+
+    async fn get_hotel_amenities(
+        &self,
+    ) -> Result<Vec<domain_models::hotels::AmenityData>, error_stack::Report<errors::HotelErrorTypes>> {
+        let amenities = sqlx::query_file_as!(
+            hotels::AmenitiesRow,
+            "src/db/queries/get_hotel_amenities.sql"
+        )
+        .fetch_all(self)
+        .await
+        .attach_printable("Database error while fetching hotel amenities")
+        .change_context(errors::HotelErrorTypes::InternalServerError)?;
+
+        Ok(amenities.into_iter().map(|row| row.into_domain_model()).collect())
     }
 }

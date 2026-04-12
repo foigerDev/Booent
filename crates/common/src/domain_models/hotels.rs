@@ -64,3 +64,15 @@ pub struct HotelData {
     pub created_at: OffsetDateTime,
     pub updated_at: OffsetDateTime,
 }
+
+#[derive(Debug, Clone)]
+pub struct AmenityData {
+    pub id: Uuid,
+    pub name: String,
+    pub slug: String,
+    pub category_id: Uuid,
+    pub category_name: String,
+    pub category_slug: String,
+    pub icon: Option<String>,
+    pub display_order: i32,
+}

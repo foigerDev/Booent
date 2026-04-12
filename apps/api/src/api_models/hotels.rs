@@ -62,7 +62,6 @@ pub struct HotelUpdateRequest {
     pub check_out_time: Option<time::Time>,
     pub instagram_url: Option<String>,
     pub whatsapp_number: Option<String>,
-    
 }
 
 impl From<HotelUpdateRequest> for hotels::HotelUpdateRequest {
