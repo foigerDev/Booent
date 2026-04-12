@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "DELETE FROM hotel_amenities WHERE hotel_id = $1;\n",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "ad9cf8aa4ae14ed17c667fd4ba782ccaa287540f1a4ed831fe086821ed3e90fe"
+}

@@ -48,6 +48,18 @@ pub trait HotelRepository {
         &self,
     ) -> Result<Vec<domain_models::hotels::AmenityData>, error_stack::Report<errors::HotelErrorTypes>>;
 
+    async fn update_hotel_branding(
+        &self,
+        hotel_id: uuid::Uuid,
+        req: domain_models::hotels::HotelBrandingUpdateRequest,
+    ) -> Result<domain_models::hotels::HotelBrandingData, error_stack::Report<errors::HotelErrorTypes>>;
+
+    async fn check_user_owns_hotel(
+        &self,
+        user_id: &str,
+        hotel_id: uuid::Uuid,
+    ) -> Result<bool, error_stack::Report<errors::HotelErrorTypes>>;
+
 }
 
 #[async_trait]
@@ -201,5 +213,84 @@ impl HotelRepository for sqlx::PgPool {
         .change_context(errors::HotelErrorTypes::InternalServerError)?;
 
         Ok(amenities.into_iter().map(|row| row.into_domain_model()).collect())
+    }
+
+    async fn update_hotel_branding(
+        &self,
+        hotel_id: uuid::Uuid,
+        req: domain_models::hotels::HotelBrandingUpdateRequest,
+    ) -> Result<domain_models::hotels::HotelBrandingData, error_stack::Report<errors::HotelErrorTypes>> {
+        let hotel = sqlx::query_file_as!(
+            hotels::HotelsRow,
+            "src/db/queries/update_hotel_branding.sql",
+            req.instagram_url,
+            req.whatsapp_number,
+            hotel_id,
+        )
+        .fetch_optional(self)
+        .await
+        .attach_printable("Database error while updating hotel branding")
+        .change_context(errors::HotelErrorTypes::InternalServerError)?;
+
+        let hotel_data = match hotel {
+            Some(h) => h.into_domain_model()
+                .map_err(|_| error_stack::Report::new(errors::HotelErrorTypes::InternalServerError))?,
+            None => Err(error_stack::Report::new(errors::HotelErrorTypes::HotelNotFound))?,
+        };
+
+        let amenities = if let Some(amenity_ids) = &req.amenity_ids {
+            sqlx::query_file!("src/db/queries/delete_hotel_amenities.sql", hotel_id)
+                .execute(self)
+                .await
+                .attach_printable("Database error while deleting hotel amenities")
+                .change_context(errors::HotelErrorTypes::InternalServerError)?;
+
+            if amenity_ids.is_empty() {
+                vec![]
+            } else {
+                let amenity_ids_ref: Vec<uuid::Uuid> = amenity_ids.clone();
+                sqlx::query_file!("src/db/queries/insert_hotel_amenities.sql", hotel_id, amenity_ids_ref.as_slice())
+                    .execute(self)
+                    .await
+                    .attach_printable("Database error while inserting hotel amenities")
+                    .change_context(errors::HotelErrorTypes::InternalServerError)?;
+
+                let amenities_rows = sqlx::query_file_as!(
+                    hotels::AmenitiesRow,
+                    "src/db/queries/get_amenities_by_ids.sql",
+                    &amenity_ids_ref
+                )
+                .fetch_all(self)
+                .await
+                .attach_printable("Database error while fetching amenities by ids")
+                .change_context(errors::HotelErrorTypes::InternalServerError)?;
+                amenities_rows.into_iter().map(|row| row.into_domain_model()).collect()
+            }
+        } else {
+            vec![]
+        };
+
+        Ok(domain_models::hotels::HotelBrandingData {
+            hotel: hotel_data,
+            amenities,
+        })
+    }
+
+    async fn check_user_owns_hotel(
+        &self,
+        user_id: &str,
+        hotel_id: uuid::Uuid,
+    ) -> Result<bool, error_stack::Report<errors::HotelErrorTypes>> {
+        let result = sqlx::query_file!(
+            "src/db/queries/check_user_owns_hotel.sql",
+            user_id,
+            hotel_id
+        )
+        .fetch_optional(self)
+        .await
+        .attach_printable("Database error while checking user hotel ownership")
+        .change_context(errors::HotelErrorTypes::InternalServerError)?;
+
+        Ok(result.is_some())
     }
 }

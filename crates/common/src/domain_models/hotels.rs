@@ -76,3 +76,16 @@ pub struct AmenityData {
     pub icon: Option<String>,
     pub display_order: i32,
 }
+
+#[derive(Debug, Clone)]
+pub struct HotelBrandingUpdateRequest {
+    pub instagram_url: Option<String>,
+    pub whatsapp_number: Option<String>,
+    pub amenity_ids: Option<Vec<Uuid>>,
+}
+
+#[derive(Debug, Clone)]
+pub struct HotelBrandingData {
+    pub hotel: HotelData,
+    pub amenities: Vec<AmenityData>,
+}

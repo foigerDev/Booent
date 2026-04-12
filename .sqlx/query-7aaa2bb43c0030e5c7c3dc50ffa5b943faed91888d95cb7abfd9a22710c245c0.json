@@ -1,0 +1,64 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT \n    a.id,\n    a.name,\n    a.slug,\n    a.category_id,\n    c.name as category_name,\n    c.slug as category_slug,\n    a.icon,\n    a.display_order\nFROM amenities a\nJOIN amenity_categories c ON a.category_id = c.id\nWHERE a.id = ANY($1::uuid[])\nORDER BY c.display_order ASC, a.display_order ASC;\n",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "slug",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "category_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 4,
+        "name": "category_name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 5,
+        "name": "category_slug",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 6,
+        "name": "icon",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 7,
+        "name": "display_order",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "UuidArray"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      true,
+      false
+    ]
+  },
+  "hash": "7aaa2bb43c0030e5c7c3dc50ffa5b943faed91888d95cb7abfd9a22710c245c0"
+}

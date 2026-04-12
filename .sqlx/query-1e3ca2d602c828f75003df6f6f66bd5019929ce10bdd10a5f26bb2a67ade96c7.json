@@ -1,0 +1,23 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT hotel_id FROM hotel_users WHERE user_id = $1 AND hotel_id = $2 LIMIT 1;\n",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "hotel_id",
+        "type_info": "Uuid"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "1e3ca2d602c828f75003df6f6f66bd5019929ce10bdd10a5f26bb2a67ade96c7"
+}

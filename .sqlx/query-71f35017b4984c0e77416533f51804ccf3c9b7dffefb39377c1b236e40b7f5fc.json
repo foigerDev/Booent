@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO hotel_amenities (hotel_id, amenity_id)\nSELECT $1, unnest($2::uuid[])\nON CONFLICT (hotel_id, amenity_id) DO NOTHING;\n",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "UuidArray"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "71f35017b4984c0e77416533f51804ccf3c9b7dffefb39377c1b236e40b7f5fc"
+}

@@ -111,3 +111,77 @@ impl From<hotels::HotelData> for HotelCreateResponse {
         }
     }
 }
+
+#[derive(Deserialize)]
+pub struct HotelBrandingUpdateRequest {
+    pub instagram_url: Option<String>,
+    pub whatsapp_number: Option<String>,
+    pub amenity_ids: Option<Vec<String>>,
+}
+
+impl From<HotelBrandingUpdateRequest> for hotels::HotelBrandingUpdateRequest {
+    fn from(req: HotelBrandingUpdateRequest) -> Self {
+        Self {
+            instagram_url: req.instagram_url,
+            whatsapp_number: req.whatsapp_number,
+            amenity_ids: req.amenity_ids.map(|ids| {
+                ids.into_iter()
+                    .filter_map(|id| uuid::Uuid::parse_str(&id).ok())
+                    .collect()
+            }),
+        }
+    }
+}
+
+#[derive(Serialize)]
+pub struct AmenityResponse {
+    pub id: String,
+    pub name: String,
+    pub slug: String,
+    pub category: AmenityCategoryResponse,
+    pub icon: Option<String>,
+    pub display_order: i32,
+}
+
+#[derive(Serialize)]
+pub struct AmenityCategoryResponse {
+    pub id: String,
+    pub name: String,
+    pub slug: String,
+}
+
+impl From<hotels::AmenityData> for AmenityResponse {
+    fn from(domain: hotels::AmenityData) -> Self {
+        Self {
+            id: domain.id.to_string(),
+            name: domain.name,
+            slug: domain.slug,
+            category: AmenityCategoryResponse {
+                id: domain.category_id.to_string(),
+                name: domain.category_name,
+                slug: domain.category_slug,
+            },
+            icon: domain.icon,
+            display_order: domain.display_order,
+        }
+    }
+}
+
+#[derive(Serialize)]
+pub struct HotelBrandingUpdateResponse {
+    pub hotel: HotelCreateResponse,
+    pub amenities: Vec<AmenityResponse>,
+}
+
+impl From<hotels::HotelBrandingData> for HotelBrandingUpdateResponse {
+    fn from(domain: hotels::HotelBrandingData) -> Self {
+        Self {
+            hotel: HotelCreateResponse::from(domain.hotel),
+            amenities: domain
+                .amenities
+                .into_iter()
+                .map(AmenityResponse::from)
+                .collect(),
+        }
+    }
+}

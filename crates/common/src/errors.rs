@@ -72,6 +72,7 @@ pub enum HotelErrorTypes {
     HotelCreationFailed,
     HotelAlreadyExists,
     HotelNotFound,
+    UnauthorizedHotelAccess,
     InternalServerError,
 }
 
@@ -81,6 +82,9 @@ impl fmt::Display for HotelErrorTypes {
             HotelErrorTypes::HotelCreationFailed => write!(f, "Hotel creation failed"),
             HotelErrorTypes::HotelAlreadyExists => write!(f, "Hotel already registered"),
             HotelErrorTypes::HotelNotFound => write!(f, "Hotel not found"),
+            HotelErrorTypes::UnauthorizedHotelAccess => {
+                write!(f, "You don't have access to this hotel")
+            }
             HotelErrorTypes::InternalServerError => write!(f, "Internal server error"),
         }
     }
@@ -173,6 +177,7 @@ impl IntoResponse for ApiError {
                     HotelErrorTypes::HotelCreationFailed => StatusCode::INTERNAL_SERVER_ERROR,
                     HotelErrorTypes::HotelAlreadyExists => StatusCode::CONFLICT,
                     HotelErrorTypes::HotelNotFound => StatusCode::NOT_FOUND,
+                    HotelErrorTypes::UnauthorizedHotelAccess => StatusCode::FORBIDDEN,
                     HotelErrorTypes::InternalServerError => StatusCode::INTERNAL_SERVER_ERROR,
                 };
 

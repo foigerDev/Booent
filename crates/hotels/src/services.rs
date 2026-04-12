@@ -1,5 +1,5 @@
 use common::db::hotels_interface::HotelRepository;
-use common::domain_models::hotels::{self, HotelData};
+use common::domain_models::hotels::{self, HotelData, HotelBrandingData, HotelBrandingUpdateRequest};
 use common::errors::HotelErrorTypes;
 use sqlx::PgPool;
 use uuid::Uuid;
@@ -34,5 +34,13 @@ pub async fn update_hotel(
     req: hotels::HotelUpdateRequest,
 ) -> Result<HotelData, error_stack::Report<HotelErrorTypes>> {
     pool.update_hotel(hotel_id, req).await
+}
+
+pub async fn update_hotel_branding(
+    pool: &PgPool,
+    hotel_id: Uuid,
+    req: HotelBrandingUpdateRequest,
+) -> Result<HotelBrandingData, error_stack::Report<HotelErrorTypes>> {
+    pool.update_hotel_branding(hotel_id, req).await
 }
     

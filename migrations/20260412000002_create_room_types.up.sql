@@ -1,0 +1,23 @@
+CREATE TABLE room_types (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    hotel_id UUID NOT NULL REFERENCES hotels(id) ON DELETE CASCADE,
+    name TEXT NOT NULL,
+    slug TEXT NOT NULL,
+    description TEXT,
+    base_price NUMERIC(10,2) NOT NULL,
+    currency TEXT NOT NULL DEFAULT 'INR',
+    max_adults INT NOT NULL,
+    max_children INT DEFAULT 0,
+    max_occupancy INT NOT NULL,
+    bed_type TEXT,
+    bed_count INT DEFAULT 1,
+    cover_image_url TEXT,
+    video_url TEXT,
+    extra_bed_allowed BOOLEAN DEFAULT false,
+    extra_bed_charge NUMERIC(10,2),
+    extra_bed_charge_type TEXT DEFAULT 'per_night',
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW(),
+    CONSTRAINT unique_room_type_per_hotel UNIQUE (hotel_id, slug)
+);
