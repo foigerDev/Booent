@@ -66,3 +66,30 @@ pub async fn hotel_branding_update(
 
     Ok(Json(response_body))
 }
+
+pub async fn create_room_type(
+    State(state): State<Arc<AppState>>,
+    headers: axum::http::HeaderMap,
+    axum::extract::Path(hotel_id): axum::extract::Path<uuid::Uuid>,
+    Json(payload): Json<api_models_hotels::RoomTypeCreateRequest>,
+) -> Result<impl IntoResponse, ApiError> {
+    let request_context = middleware::middleware(&state.db, state.config.clone(), headers).await?;
+    let _user = state.db.find_user_by_user_id(&request_context.user_id, &state.config.admin_api_key).await.change_context
+    (errors::AuthErrorTypes::UserNotFound).map_err(ApiError::Auth)?;
+    
+    let user_owns_hotel = state.db.check_user_owns_hotel(&request_context.user_id, hotel_id).await
+        .map_err(ApiError::Hotel)?;
+    if !user_owns_hotel {
+        return Err(ApiError::Hotel(
+            error_stack::Report::new(errors::HotelErrorTypes::UnauthorizedHotelAccess)
+        ));
+    }
+    
+    let room_type = hotels::services::create_room_type(&state.db, hotel_id, payload.into()).await.map_err(ApiError::Hotel)?;
+    let response_body = api_models_hotels::RoomTypeResponse::from(room_type);
+
+    let mut response = Json(response_body).into_response();
+    *response.status_mut() = StatusCode::CREATED;
+
+    Ok(response)
+}

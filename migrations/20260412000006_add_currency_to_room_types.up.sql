@@ -1,0 +1,1 @@
+ALTER TABLE room_types ADD COLUMN currency TEXT NOT NULL DEFAULT 'INR';

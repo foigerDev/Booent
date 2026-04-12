@@ -5,6 +5,7 @@ CREATE TABLE room_types (
     slug TEXT NOT NULL,
     description TEXT,
     base_price NUMERIC(10,2) NOT NULL,
+    currency TEXT NOT NULL DEFAULT 'INR',
     max_adults INT NOT NULL,
     max_children INT DEFAULT 0,
     max_occupancy INT NOT NULL,

@@ -1,0 +1,137 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO room_types (\n    hotel_id,\n    name,\n    slug,\n    description,\n    base_price,\n    currency,\n    max_adults,\n    max_children,\n    max_occupancy,\n    cover_image_url,\n    video_url,\n    extra_bed_allowed,\n    extra_bed_charge,\n    extra_bed_charge_type\n) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)\nRETURNING *;\n",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "hotel_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 2,
+        "name": "name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "slug",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "description",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 5,
+        "name": "base_price",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 6,
+        "name": "max_adults",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 7,
+        "name": "max_children",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 8,
+        "name": "max_occupancy",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 9,
+        "name": "cover_image_url",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 10,
+        "name": "video_url",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 11,
+        "name": "extra_bed_allowed",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 12,
+        "name": "extra_bed_charge",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 13,
+        "name": "extra_bed_charge_type",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 14,
+        "name": "is_active",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 15,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 16,
+        "name": "updated_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 17,
+        "name": "currency",
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Text",
+        "Text",
+        "Text",
+        "Numeric",
+        "Text",
+        "Int4",
+        "Int4",
+        "Int4",
+        "Text",
+        "Text",
+        "Bool",
+        "Numeric",
+        "Text"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      true,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false
+    ]
+  },
+  "hash": "b6b3f04e578f182a0ca46cb3e1ebdb008e0efc354169e08ca1091a0e0951b74d"
+}

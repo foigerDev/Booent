@@ -99,3 +99,53 @@ impl AmenitiesRow {
         }
     }
 }
+
+#[derive(Debug, sqlx::FromRow)]
+pub struct RoomTypesRow {
+    pub id: uuid::Uuid,
+    pub hotel_id: uuid::Uuid,
+    pub name: String,
+    pub slug: String,
+    pub description: Option<String>,
+    pub base_price: bigdecimal::BigDecimal,
+    pub currency: Option<String>,
+    pub max_adults: i32,
+    pub max_children: Option<i32>,
+    pub max_occupancy: i32,
+    pub cover_image_url: Option<String>,
+    pub video_url: Option<String>,
+    pub extra_bed_allowed: Option<bool>,
+    pub extra_bed_charge: Option<bigdecimal::BigDecimal>,
+    pub extra_bed_charge_type: Option<String>,
+    pub is_active: Option<bool>,
+    pub created_at: Option<time::OffsetDateTime>,
+    pub updated_at: Option<time::OffsetDateTime>,
+}
+
+impl RoomTypesRow {
+    pub fn into_domain_model(self) -> domain_models::room_types::RoomTypeData {
+        domain_models::room_types::RoomTypeData {
+            id: self.id,
+            hotel_id: self.hotel_id,
+            name: self.name,
+            slug: self.slug,
+            description: self.description,
+            base_price: self.base_price,
+            max_adults: self.max_adults,
+            max_children: self.max_children.unwrap_or(0),
+            max_occupancy: self.max_occupancy,
+            cover_image_url: self.cover_image_url,
+            video_url: self.video_url,
+            extra_bed_allowed: self.extra_bed_allowed.unwrap_or(false),
+            extra_bed_charge: self.extra_bed_charge,
+            extra_bed_charge_type: self.extra_bed_charge_type,
+            is_active: self.is_active.unwrap_or(true),
+            created_at: self
+                .created_at
+                .unwrap_or_else(time::OffsetDateTime::now_utc),
+            updated_at: self
+                .updated_at
+                .unwrap_or_else(time::OffsetDateTime::now_utc),
+        }
+    }
+}

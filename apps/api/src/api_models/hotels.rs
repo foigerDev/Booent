@@ -1,5 +1,8 @@
 use super::common_models;
-use common::{common_enums, domain_models::hotels};
+use common::{
+    common_enums,
+    domain_models::{hotels, room_types},
+};
 use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize)]
@@ -182,6 +185,120 @@ impl From<hotels::HotelBrandingData> for HotelBrandingUpdateResponse {
                 .into_iter()
                 .map(AmenityResponse::from)
                 .collect(),
+        }
+    }
+}
+
+#[derive(Deserialize)]
+pub struct BedRequest {
+    pub bed_type: String,
+    pub bed_count: i32,
+}
+
+#[derive(Deserialize)]
+pub struct RoomTypeCreateRequest {
+    pub name: String,
+    pub description: Option<String>,
+    pub base_price: bigdecimal::BigDecimal,
+    pub currency: Option<String>,
+    pub max_adults: i32,
+    pub max_children: i32,
+    pub max_occupancy: i32,
+    pub beds: Vec<BedRequest>,
+    pub cover_image_url: Option<String>,
+    pub video_url: Option<String>,
+    pub extra_bed_allowed: Option<bool>,
+    pub extra_bed_charge: Option<bigdecimal::BigDecimal>,
+    pub extra_bed_charge_type: Option<String>,
+}
+
+impl From<RoomTypeCreateRequest> for room_types::RoomTypeCreateRequest {
+    fn from(req: RoomTypeCreateRequest) -> Self {
+        Self {
+            name: req.name,
+            description: req.description,
+            base_price: req.base_price,
+            currency: req.currency,
+            max_adults: req.max_adults,
+            max_children: req.max_children,
+            max_occupancy: req.max_occupancy,
+            beds: req
+                .beds
+                .into_iter()
+                .map(|b| room_types::BedInfo {
+                    bed_type: b.bed_type.parse().unwrap_or(room_types::BedType::Single),
+                    bed_count: b.bed_count,
+                })
+                .collect(),
+            cover_image_url: req.cover_image_url,
+            video_url: req.video_url,
+            extra_bed_allowed: req.extra_bed_allowed,
+            extra_bed_charge: req.extra_bed_charge,
+            extra_bed_charge_type: req.extra_bed_charge_type,
+        }
+    }
+}
+
+#[derive(Serialize)]
+pub struct BedResponse {
+    pub bed_type: String,
+    pub bed_count: i32,
+}
+
+impl From<room_types::BedInfo> for BedResponse {
+    fn from(bed: room_types::BedInfo) -> Self {
+        Self {
+            bed_type: bed.bed_type.to_string(),
+            bed_count: bed.bed_count,
+        }
+    }
+}
+
+#[derive(Serialize)]
+pub struct RoomTypeResponse {
+    pub id: String,
+    pub hotel_id: String,
+    pub name: String,
+    pub slug: String,
+    pub description: Option<String>,
+    pub base_price: bigdecimal::BigDecimal,
+    pub currency: String,
+    pub max_adults: i32,
+    pub max_children: i32,
+    pub max_occupancy: i32,
+    pub beds: Vec<BedResponse>,
+    pub cover_image_url: Option<String>,
+    pub video_url: Option<String>,
+    pub extra_bed_allowed: bool,
+    pub extra_bed_charge: Option<bigdecimal::BigDecimal>,
+    pub extra_bed_charge_type: Option<String>,
+    pub is_active: bool,
+    pub created_at: time::OffsetDateTime,
+    pub updated_at: time::OffsetDateTime,
+}
+
+impl From<room_types::CombinedRoomData> for RoomTypeResponse {
+    fn from(room: room_types::CombinedRoomData) -> Self {
+        Self {
+            id: room.id.to_string(),
+            hotel_id: room.hotel_id.to_string(),
+            name: room.name,
+            slug: room.slug,
+            description: room.description,
+            base_price: room.base_price,
+            currency: "INR".to_string(),
+            max_adults: room.max_adults,
+            max_children: room.max_children,
+            max_occupancy: room.max_occupancy,
+            beds: room.beds.into_iter().map(BedResponse::from).collect(),
+            cover_image_url: room.cover_image_url,
+            video_url: room.video_url,
+            extra_bed_allowed: room.extra_bed_allowed,
+            extra_bed_charge: room.extra_bed_charge,
+            extra_bed_charge_type: room.extra_bed_charge_type,
+            is_active: room.is_active,
+            created_at: room.created_at,
+            updated_at: room.updated_at,
         }
     }
 }

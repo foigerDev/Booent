@@ -16,6 +16,7 @@ pub fn build_app(state: Arc<crate::app_state::AppState>) -> Router {
         .route("/", post(hotels::hotel_create))
         .route("/:hotel_id", put(hotels::hotel_update))
         .route("/:hotel_id/branding", put(hotels::hotel_branding_update))
+        .route("/:hotel_id/room_types", post(hotels::create_room_type))
         .route("/amenities", get(amenities::get_hotel_amenities))
         // .route("/", get(hotels::hotel_list))
         // .route("/:hotel_id", get(hotels::hotel_retrieve))
