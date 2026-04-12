@@ -21,6 +21,23 @@ pub struct HotelCreateRequest {
 }
 
 #[derive(Debug, Clone)]
+pub struct HotelUpdateRequest {
+    pub name: Option<String>,
+    pub email: Option<String>,
+    pub phone: Option<String>,
+    pub address_line1: Option<String>,
+    pub address_line2: Option<String>,
+    pub city: Option<String>,
+    pub state: Option<String>,
+    pub country: Option<String>,
+    pub pincode: Option<String>,
+    pub check_in_time: Option<Time>,
+    pub check_out_time: Option<Time>,
+    pub logo_url: Option<String>,
+    pub cover_image_url: Option<String>,
+}
+
+#[derive(Debug, Clone)]
 pub struct HotelData {
     pub id: Uuid,
     pub name: String,

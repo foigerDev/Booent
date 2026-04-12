@@ -50,6 +50,43 @@ pub struct HotelCreateResponse {
     pub updated_at: time::OffsetDateTime,
 }
 
+#[derive(Deserialize)]
+pub struct HotelUpdateRequest {
+    pub name: Option<String>,
+    pub cover_image_url: Option<String>,
+    pub logo_url: Option<String>,
+    pub phone: Option<String>,
+    pub email: Option<String>,
+    pub address: Option<common_models::HotelAddress>,
+    pub check_in_time: Option<time::Time>,
+    pub check_out_time: Option<time::Time>,
+    pub instagram_url: Option<String>,
+    pub whatsapp_number: Option<String>,
+    
+}
+
+impl From<HotelUpdateRequest> for hotels::HotelUpdateRequest {
+    fn from(req: HotelUpdateRequest) -> Self {
+        Self {
+            name: req.name,
+            cover_image_url: req.cover_image_url,
+            logo_url: req.logo_url,
+            phone: req.phone,
+            email: req.email,
+            address_line1: req.address.as_ref().map(|a| a.address_line1.clone()),
+            address_line2: req.address.as_ref().and_then(|a| a.address_line2.clone()),
+            city: req.address.as_ref().map(|a| a.city.clone()),
+            state: req.address.as_ref().map(|a| a.state.clone()),
+            country: req.address.as_ref().map(|a| a.country.clone()),
+            pincode: req.address.as_ref().map(|a| a.pincode.clone()),
+            check_in_time: req.check_in_time,
+            check_out_time: req.check_out_time,
+        }
+    }
+}
+
+pub type HotelUpdateResponse = HotelCreateResponse;
+
 impl From<hotels::HotelData> for HotelCreateResponse {
     fn from(req: hotels::HotelData) -> Self {
         Self {

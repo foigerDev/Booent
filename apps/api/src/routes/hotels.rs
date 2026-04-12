@@ -27,3 +27,18 @@ pub async fn hotel_create(
 
     Ok(response)
 }
+
+pub async fn hotel_update(
+    State(state): State<Arc<AppState>>,
+    headers: axum::http::HeaderMap,
+    axum::extract::Path(hotel_id): axum::extract::Path<uuid::Uuid>,
+    Json(payload): Json<api_models_hotels::HotelUpdateRequest>,
+) -> Result<impl IntoResponse, ApiError> {
+    let request_context = middleware::middleware(&state.db, state.config.clone(), headers).await?;
+    let _user = state.db.find_user_by_user_id(&request_context.user_id, &state.config.admin_api_key).await.change_context
+    (errors::AuthErrorTypes::UserNotFound).map_err(ApiError::Auth)?;
+    let hotel_response = hotels::services::update_hotel(&state.db, hotel_id, payload.into()).await.map_err(ApiError::Hotel)?;
+    let response_body = api_models_hotels::HotelUpdateResponse::from(hotel_response);
+
+    Ok(Json(response_body))
+}

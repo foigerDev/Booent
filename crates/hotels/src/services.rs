@@ -27,4 +27,12 @@ pub async fn add_user_to_hotel(
 ) -> Result<(), error_stack::Report<HotelErrorTypes>> {
     pool.add_user_to_hotel(user_id, hotel_id).await
 }
+
+pub async fn update_hotel(
+    pool: &PgPool,
+    hotel_id: Uuid,
+    req: hotels::HotelUpdateRequest,
+) -> Result<HotelData, error_stack::Report<HotelErrorTypes>> {
+    pool.update_hotel(hotel_id, req).await
+}
     

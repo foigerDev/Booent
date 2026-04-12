@@ -38,6 +38,12 @@ pub trait HotelRepository {
         status: &str,
     ) -> Result<domain_models::hotels::HotelData, error_stack::Report<errors::HotelErrorTypes>>;
 
+    async fn update_hotel(
+        &self,
+        hotel_id: uuid::Uuid,
+        hotel_data: domain_models::hotels::HotelUpdateRequest,
+    ) -> Result<domain_models::hotels::HotelData, error_stack::Report<errors::HotelErrorTypes>>;
+
 }
 
 #[async_trait]
@@ -133,6 +139,42 @@ impl HotelRepository for sqlx::PgPool {
         .fetch_optional(self)
         .await
         .attach_printable("Database error while updating hotel status")
+        .change_context(errors::HotelErrorTypes::InternalServerError)?;
+
+        match hotel {
+            Some(h) => h.into_domain_model()
+                .map_err(|_| error_stack::Report::new(errors::HotelErrorTypes::InternalServerError)),
+            None => Err(error_stack::Report::new(errors::HotelErrorTypes::HotelNotFound)),
+        }
+    }
+
+    async fn update_hotel(
+        &self,
+        hotel_id: uuid::Uuid,
+        hotel_data: domain_models::hotels::HotelUpdateRequest,
+    ) -> Result<domain_models::hotels::HotelData, error_stack::Report<errors::HotelErrorTypes>> {
+        let hotel = sqlx::query_file_as!(
+            hotels::HotelsRow,
+            "src/db/queries/update_hotel.sql",
+            hotel_data.name,
+            hotels::HotelsRow::slug_from_name(hotel_data.name.as_deref().unwrap_or("")),
+            hotel_data.email,
+            hotel_data.phone,
+            hotel_data.address_line1,
+            hotel_data.address_line2,
+            hotel_data.city,
+            hotel_data.state,
+            hotel_data.country,
+            hotel_data.pincode,
+            hotel_data.check_in_time,
+            hotel_data.check_out_time,
+            hotel_data.logo_url,
+            hotel_data.cover_image_url,
+            hotel_id,
+        )
+        .fetch_optional(self)
+        .await
+        .attach_printable("Database error while updating hotel")
         .change_context(errors::HotelErrorTypes::InternalServerError)?;
 
         match hotel {

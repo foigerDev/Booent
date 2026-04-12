@@ -26,6 +26,22 @@ pub struct HotelsRow {
 }
 
 impl HotelsRow {
+    pub fn slug_from_name(name: &str) -> String {
+        name.to_lowercase()
+            .chars()
+            .map(|character| {
+                if character.is_ascii_alphanumeric() {
+                    character
+                } else {
+                    ' '
+                }
+            })
+            .collect::<String>()
+            .split_whitespace()
+            .collect::<Vec<_>>()
+            .join("-")
+    }
+
     pub fn into_domain_model(
         &self,
     ) -> Result<domain_models::hotels::HotelData, error_stack::Report<errors::HotelErrorTypes>>
@@ -33,7 +49,7 @@ impl HotelsRow {
         let status = common_enums::HotelStatus::try_from(self.status.as_str())
             .map_err(|_| errors::HotelErrorTypes::InternalServerError)?;
         Ok(domain_models::hotels::HotelData {
-            id: self.id.clone(),
+            id: self.id,
             slug: self.slug.clone(),
             name: self.name.clone(),
             email: self.email.clone(),
