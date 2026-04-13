@@ -23,3 +23,16 @@ pub async fn get_hotel_amenities(
     
     Ok(amenities)
 }
+
+pub async fn get_room_amenities(
+    pool: &PgPool
+) -> Result<Vec<AmenityData>, error_stack::Report<HotelErrorTypes>> {
+    if let Some(amenities) = get_cache().room_amenities.get() {
+        return Ok(amenities.clone());
+    }
+
+    let amenities = pool.get_room_amenities().await?;
+    let _ = get_cache().room_amenities.set(amenities.clone());
+    
+    Ok(amenities)
+}

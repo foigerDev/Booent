@@ -63,7 +63,7 @@ pub async fn hotel_branding_update(
     
     let branding_data = hotels::services::update_hotel_branding(&state.db, hotel_id, payload.into()).await.map_err(ApiError::Hotel)?;
     let response_body = api_models_hotels::HotelBrandingUpdateResponse::from(branding_data);
-
+    
     Ok(Json(response_body))
 }
 

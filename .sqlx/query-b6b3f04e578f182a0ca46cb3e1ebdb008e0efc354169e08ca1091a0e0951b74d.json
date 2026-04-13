@@ -35,63 +35,63 @@
       },
       {
         "ordinal": 6,
+        "name": "currency",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 7,
         "name": "max_adults",
         "type_info": "Int4"
       },
       {
-        "ordinal": 7,
+        "ordinal": 8,
         "name": "max_children",
         "type_info": "Int4"
       },
       {
-        "ordinal": 8,
+        "ordinal": 9,
         "name": "max_occupancy",
         "type_info": "Int4"
       },
       {
-        "ordinal": 9,
+        "ordinal": 10,
         "name": "cover_image_url",
         "type_info": "Text"
       },
       {
-        "ordinal": 10,
+        "ordinal": 11,
         "name": "video_url",
         "type_info": "Text"
       },
       {
-        "ordinal": 11,
+        "ordinal": 12,
         "name": "extra_bed_allowed",
         "type_info": "Bool"
       },
       {
-        "ordinal": 12,
+        "ordinal": 13,
         "name": "extra_bed_charge",
         "type_info": "Numeric"
       },
       {
-        "ordinal": 13,
+        "ordinal": 14,
         "name": "extra_bed_charge_type",
         "type_info": "Text"
       },
       {
-        "ordinal": 14,
+        "ordinal": 15,
         "name": "is_active",
         "type_info": "Bool"
       },
       {
-        "ordinal": 15,
+        "ordinal": 16,
         "name": "created_at",
         "type_info": "Timestamptz"
       },
       {
-        "ordinal": 16,
+        "ordinal": 17,
         "name": "updated_at",
         "type_info": "Timestamptz"
-      },
-      {
-        "ordinal": 17,
-        "name": "currency",
-        "type_info": "Text"
       }
     ],
     "parameters": {
@@ -120,6 +120,7 @@
       true,
       false,
       false,
+      false,
       true,
       false,
       true,
@@ -129,8 +130,7 @@
       true,
       true,
       true,
-      true,
-      false
+      true
     ]
   },
   "hash": "b6b3f04e578f182a0ca46cb3e1ebdb008e0efc354169e08ca1091a0e0951b74d"

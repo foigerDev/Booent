@@ -24,3 +24,19 @@ pub async fn get_hotel_amenities(
 
     Ok(Json(response))
 }
+
+pub async fn get_room_amenities(
+    State(state): State<Arc<AppState>>,
+    headers: HeaderMap,
+) -> Result<Json<api_models_amenities::HotelAmenitiesResponse>, ApiError> {
+    utils::validate_api_key(&headers, state.config.admin_api_key.expose_secret())?;
+    let amenities = hotels::amenities::get_room_amenities(&state.db)
+        .await
+        .map_err(ApiError::Hotel)?;
+    
+    let response = api_models_amenities::HotelAmenitiesResponse {
+        amenities: amenities.into_iter().map(api_models_amenities::AmenityResponse::from).collect(),
+    };
+
+    Ok(Json(response))
+}

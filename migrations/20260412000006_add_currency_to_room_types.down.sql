@@ -1,1 +1,0 @@
-ALTER TABLE room_types DROP COLUMN IF EXISTS currency;
