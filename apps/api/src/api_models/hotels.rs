@@ -201,9 +201,11 @@ pub struct RoomTypeCreateRequest {
     pub description: Option<String>,
     pub base_price: bigdecimal::BigDecimal,
     pub currency: Option<String>,
+    pub base_occupancy: i32,
     pub max_adults: i32,
     pub max_children: i32,
     pub max_occupancy: i32,
+    pub is_couple_friendly: bool,
     pub beds: Vec<BedRequest>,
     pub cover_image_url: Option<String>,
     pub video_url: Option<String>,
@@ -219,9 +221,11 @@ impl From<RoomTypeCreateRequest> for room_types::RoomTypeCreateRequest {
             description: req.description,
             base_price: req.base_price,
             currency: req.currency,
+            base_occupancy: req.base_occupancy,
             max_adults: req.max_adults,
             max_children: req.max_children,
             max_occupancy: req.max_occupancy,
+            is_couple_friendly: req.is_couple_friendly,
             beds: req
                 .beds
                 .into_iter()
@@ -263,9 +267,11 @@ pub struct RoomTypeResponse {
     pub description: Option<String>,
     pub base_price: bigdecimal::BigDecimal,
     pub currency: String,
+    pub base_occupancy: i32,
     pub max_adults: i32,
     pub max_children: i32,
     pub max_occupancy: i32,
+    pub is_couple_friendly: bool,
     pub beds: Vec<BedResponse>,
     pub cover_image_url: Option<String>,
     pub video_url: Option<String>,
@@ -287,9 +293,11 @@ impl From<room_types::CombinedRoomData> for RoomTypeResponse {
             description: room.description,
             base_price: room.base_price,
             currency: "INR".to_string(),
+            base_occupancy: room.base_occupancy,
             max_adults: room.max_adults,
             max_children: room.max_children,
             max_occupancy: room.max_occupancy,
+            is_couple_friendly: room.is_couple_friendly,
             beds: room.beds.into_iter().map(BedResponse::from).collect(),
             cover_image_url: room.cover_image_url,
             video_url: room.video_url,
@@ -301,4 +309,15 @@ impl From<room_types::CombinedRoomData> for RoomTypeResponse {
             updated_at: room.updated_at,
         }
     }
+}
+
+#[derive(Deserialize)]
+pub struct RoomTypeAmenitiesUpdateRequest {
+    pub amenity_ids: Vec<String>,
+}
+
+#[derive(Serialize)]
+pub struct RoomTypeAmenitiesUpdateResponse {
+    pub room_type_id: String,
+    pub amenity_ids: Vec<String>,
 }

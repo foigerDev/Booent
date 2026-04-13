@@ -81,9 +81,11 @@ pub async fn create_room_type(
         slug: room_type.slug,
         description: room_type.description,
         base_price: room_type.base_price,
+        base_occupancy: room_type.base_occupancy,
         max_adults: room_type.max_adults,
         max_children: room_type.max_children,
         max_occupancy: room_type.max_occupancy,
+        is_couple_friendly: room_type.is_couple_friendly,
         beds,
         cover_image_url: room_type.cover_image_url,
         video_url: room_type.video_url,
@@ -94,5 +96,13 @@ pub async fn create_room_type(
         created_at: room_type.created_at,
         updated_at: room_type.updated_at,
     })
+}
+
+pub async fn update_room_type_amenities(
+    pool: &PgPool,
+    room_type_id: Uuid,
+    amenity_ids: Vec<Uuid>,
+) -> Result<(), error_stack::Report<HotelErrorTypes>> {
+    pool.update_room_type_amenities(room_type_id, &amenity_ids).await
 }
     

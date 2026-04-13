@@ -92,6 +92,12 @@ pub trait HotelRepository {
         room_type_id: uuid::Uuid,
         beds: Vec<domain_models::room_types::BedInfo>,
     ) -> Result<(), error_stack::Report<errors::HotelErrorTypes>>;
+
+    async fn update_room_type_amenities(
+        &self,
+        room_type_id: uuid::Uuid,
+        amenity_ids: &[uuid::Uuid],
+    ) -> Result<(), error_stack::Report<errors::HotelErrorTypes>>;
 }
 
 #[async_trait]
@@ -367,9 +373,11 @@ impl HotelRepository for sqlx::PgPool {
             req.description,
             req.base_price,
             req.currency.as_deref().unwrap_or("INR"),
+            req.base_occupancy,
             req.max_adults,
             req.max_children,
             req.max_occupancy,
+            req.is_couple_friendly,
             req.cover_image_url,
             req.video_url,
             req.extra_bed_allowed,
@@ -405,6 +413,28 @@ impl HotelRepository for sqlx::PgPool {
             .await
             .attach_printable("Database error while inserting room type beds")
             .change_context(errors::HotelErrorTypes::InternalServerError)?;
+        Ok(())
+    }
+
+    async fn update_room_type_amenities(
+        &self,
+        room_type_id: uuid::Uuid,
+        amenity_ids: &[uuid::Uuid],
+    ) -> Result<(), error_stack::Report<errors::HotelErrorTypes>> {
+        sqlx::query_file!("src/db/queries/delete_room_amenities.sql", room_type_id)
+            .execute(self)
+            .await
+            .attach_printable("Database error while deleting room amenities")
+            .change_context(errors::HotelErrorTypes::InternalServerError)?;
+
+        if !amenity_ids.is_empty() {
+            sqlx::query_file!("src/db/queries/insert_room_amenities.sql", room_type_id, amenity_ids)
+                .execute(self)
+                .await
+                .attach_printable("Database error while inserting room amenities")
+                .change_context(errors::HotelErrorTypes::InternalServerError)?;
+        }
+
         Ok(())
     }
 }

@@ -1,0 +1,2 @@
+ALTER TABLE room_types ADD COLUMN base_occupancy INT NOT NULL DEFAULT 1;
+ALTER TABLE room_types ADD COLUMN is_couple_friendly BOOLEAN NOT NULL DEFAULT FALSE;

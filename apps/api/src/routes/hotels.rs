@@ -93,3 +93,34 @@ pub async fn create_room_type(
 
     Ok(response)
 }
+
+pub async fn update_room_type_amenities(
+    State(state): State<Arc<AppState>>,
+    headers: axum::http::HeaderMap,
+    axum::extract::Path((hotel_id, room_type_id)): axum::extract::Path<(uuid::Uuid, uuid::Uuid)>,
+    Json(payload): Json<api_models_hotels::RoomTypeAmenitiesUpdateRequest>,
+) -> Result<Json<api_models_hotels::RoomTypeAmenitiesUpdateResponse>, ApiError> {
+    let request_context = middleware::middleware(&state.db, state.config.clone(), headers).await?;
+    let _user = state.db.find_user_by_user_id(&request_context.user_id, &state.config.admin_api_key).await.change_context
+    (errors::AuthErrorTypes::UserNotFound).map_err(ApiError::Auth)?;
+    
+    let user_owns_hotel = state.db.check_user_owns_hotel(&request_context.user_id, hotel_id).await
+        .map_err(ApiError::Hotel)?;
+    if !user_owns_hotel {
+        return Err(ApiError::Hotel(
+            error_stack::Report::new(errors::HotelErrorTypes::UnauthorizedHotelAccess)
+        ));
+    }
+    
+    let amenity_ids: Vec<uuid::Uuid> = payload.amenity_ids
+        .iter()
+        .filter_map(|id| uuid::Uuid::parse_str(id).ok())
+        .collect();
+    
+    hotels::services::update_room_type_amenities(&state.db, room_type_id, amenity_ids.clone()).await.map_err(ApiError::Hotel)?;
+    
+    Ok(Json(api_models_hotels::RoomTypeAmenitiesUpdateResponse {
+        room_type_id: room_type_id.to_string(),
+        amenity_ids: amenity_ids.iter().map(|id| id.to_string()).collect(),
+    }))
+}

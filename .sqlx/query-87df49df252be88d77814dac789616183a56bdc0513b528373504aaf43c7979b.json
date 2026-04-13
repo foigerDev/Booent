@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO room_amenities (room_type_id, amenity_id) SELECT $1, UNNEST($2::uuid[]);\n",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "UuidArray"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "87df49df252be88d77814dac789616183a56bdc0513b528373504aaf43c7979b"
+}

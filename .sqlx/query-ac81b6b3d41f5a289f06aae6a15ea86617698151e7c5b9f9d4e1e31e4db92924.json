@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "INSERT INTO room_types (\n    hotel_id,\n    name,\n    slug,\n    description,\n    base_price,\n    currency,\n    max_adults,\n    max_children,\n    max_occupancy,\n    cover_image_url,\n    video_url,\n    extra_bed_allowed,\n    extra_bed_charge,\n    extra_bed_charge_type\n) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)\nRETURNING *;\n",
+  "query": "INSERT INTO room_types (\n    hotel_id,\n    name,\n    slug,\n    description,\n    base_price,\n    currency,\n    base_occupancy,\n    max_adults,\n    max_children,\n    max_occupancy,\n    is_couple_friendly,\n    cover_image_url,\n    video_url,\n    extra_bed_allowed,\n    extra_bed_charge,\n    extra_bed_charge_type\n) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)\nRETURNING *;\n",
   "describe": {
     "columns": [
       {
@@ -92,6 +92,16 @@
         "ordinal": 17,
         "name": "updated_at",
         "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 18,
+        "name": "base_occupancy",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 19,
+        "name": "is_couple_friendly",
+        "type_info": "Bool"
       }
     ],
     "parameters": {
@@ -105,6 +115,8 @@
         "Int4",
         "Int4",
         "Int4",
+        "Int4",
+        "Bool",
         "Text",
         "Text",
         "Bool",
@@ -130,8 +142,10 @@
       true,
       true,
       true,
-      true
+      true,
+      false,
+      false
     ]
   },
-  "hash": "b6b3f04e578f182a0ca46cb3e1ebdb008e0efc354169e08ca1091a0e0951b74d"
+  "hash": "ac81b6b3d41f5a289f06aae6a15ea86617698151e7c5b9f9d4e1e31e4db92924"
 }
