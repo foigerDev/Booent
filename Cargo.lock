@@ -1143,6 +1143,7 @@ dependencies = [
  "common",
  "error-stack",
  "runtime_config",
+ "serde_json",
  "sqlx",
  "time",
  "uuid",

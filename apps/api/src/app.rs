@@ -1,6 +1,6 @@
 use crate::routes::{admin, amenities, auth, health, hotels};
 use axum::{
-    routing::{get, post, put},
+    routing::{delete, get, post, put},
     Router,
 };
 use std::sync::Arc;
@@ -20,6 +20,18 @@ pub fn build_app(state: Arc<crate::app_state::AppState>) -> Router {
         .route(
             "/:hotel_id/room_types/:room_type_id/amenities",
             put(hotels::update_room_type_amenities),
+        )
+        .route(
+            "/:hotel_id/room_types/:room_type_id/images",
+            post(hotels::add_room_type_image),
+        )
+        .route(
+            "/:hotel_id/room_types/:room_type_id/images",
+            get(hotels::get_room_type_images),
+        )
+        .route(
+            "/:hotel_id/room_types/:room_type_id/images/:image_id",
+            delete(hotels::delete_room_type_image),
         )
         .route("/amenities", get(amenities::get_hotel_amenities))
         .route("/room_amenities", get(amenities::get_room_amenities))

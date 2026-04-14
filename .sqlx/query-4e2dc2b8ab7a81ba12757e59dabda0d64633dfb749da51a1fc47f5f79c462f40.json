@@ -1,0 +1,55 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "-- Active: 1768238314791@@127.0.0.1@5432@booent_db@public\nINSERT INTO room_type_images (room_type_id, image_url, image_type, display_order) \nVALUES ($1, $2, $3, $4)\nRETURNING id, room_type_id,image_url, image_type, display_order, created_at;\n\n",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "room_type_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 2,
+        "name": "image_url",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "image_type",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "display_order",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 5,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Text",
+        "Text",
+        "Int4"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      true,
+      false,
+      true
+    ]
+  },
+  "hash": "4e2dc2b8ab7a81ba12757e59dabda0d64633dfb749da51a1fc47f5f79c462f40"
+}

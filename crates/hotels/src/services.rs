@@ -105,4 +105,35 @@ pub async fn update_room_type_amenities(
 ) -> Result<(), error_stack::Report<HotelErrorTypes>> {
     pool.update_room_type_amenities(room_type_id, &amenity_ids).await
 }
+
+pub async fn add_room_type_image(
+    pool: &PgPool,
+    room_type_id: Uuid,
+    image_url: String,
+    image_type: common::common_enums::RoomImageType,
+    display_order: i32,
+) -> Result<common::domain_models::room_types::RoomTypeImageData, error_stack::Report<HotelErrorTypes>> {
+    pool.add_room_type_image(room_type_id, image_url, image_type, display_order).await
+}
+
+pub async fn get_room_type_image_by_id(
+    pool: &PgPool,
+    image_id: Uuid,
+) -> Result<common::domain_models::room_types::RoomTypeImageData, error_stack::Report<HotelErrorTypes>> {
+    pool.get_room_type_image_by_id(image_id).await
+}
+
+pub async fn get_room_type_images(
+    pool: &PgPool,
+    room_type_id: Uuid,
+) -> Result<Vec<common::domain_models::room_types::RoomTypeImageData>, error_stack::Report<HotelErrorTypes>> {
+    pool.get_room_type_images(room_type_id).await
+}
+
+pub async fn delete_room_type_image(
+    pool: &PgPool,
+    image_id: Uuid,
+) -> Result<Uuid, error_stack::Report<HotelErrorTypes>> {
+    pool.delete_room_type_image(image_id).await
+}
     

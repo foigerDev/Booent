@@ -321,3 +321,33 @@ pub struct RoomTypeAmenitiesUpdateResponse {
     pub room_type_id: String,
     pub amenity_ids: Vec<String>,
 }
+
+#[derive(Deserialize, Serialize)]
+pub struct RoomTypeImagesUpdateRequest {
+    pub image_url: String,
+    pub image_type: common::common_enums::RoomImageType,
+    pub display_order: i32,
+}
+
+#[derive(Serialize)]
+pub struct RoomTypeImageResponse {
+    pub id: String,
+    pub room_type_id: String,
+    pub image_url: String,
+    pub image_type: Option<common::common_enums::RoomImageType>,
+    pub display_order: i32,
+    pub created_at: time::OffsetDateTime,
+}
+
+impl From<room_types::RoomTypeImageData> for RoomTypeImageResponse {
+    fn from(img: room_types::RoomTypeImageData) -> Self {
+        Self {
+            id: img.id.to_string(),
+            room_type_id: img.room_type_id.to_string(),
+            image_url: img.image_url,
+            image_type: img.image_type,
+            display_order: img.display_order,
+            created_at: img.created_at,
+        }
+    }
+}

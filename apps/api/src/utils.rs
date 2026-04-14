@@ -1,10 +1,14 @@
 use axum::http::HeaderMap;
 use common::{
     consts,
-    errors::{ApiError, AuthErrorTypes},
+    db::hotels_interface::HotelRepository,
+    db::users_interface::UserRepository,
+    errors::{ApiError, AuthErrorTypes, HotelErrorTypes},
 };
 use cookie::{time::Duration, Cookie, SameSite};
+use error_stack::ResultExt;
 use subtle::ConstantTimeEq;
+use uuid::Uuid;
 
 pub fn build_refresh_token_cookie(token: &str) -> Cookie<'static> {
     let max_age = Duration::minutes(consts::MAX_REFRESH_TOKEN_VALIDITY_IN_MINUTES);
@@ -57,4 +61,30 @@ impl HeaderMapExt for HeaderMap {
 
         Ok(access_token.to_string())
     }
+}
+
+pub async fn validate_user_owns_hotel(
+    db: &sqlx::PgPool,
+    admin_api_key: &secrecy::Secret<String>,
+    user_id: &str,
+    hotel_id: Uuid,
+) -> Result<(), ApiError> {
+    let _ = db
+        .find_user_by_user_id(user_id, admin_api_key)
+        .await
+        .change_context(AuthErrorTypes::UserNotFound)
+        .map_err(ApiError::Auth)?;
+
+    let user_owns_hotel = db
+        .check_user_owns_hotel(user_id, hotel_id)
+        .await
+        .map_err(ApiError::Hotel)?;
+
+    if !user_owns_hotel {
+        return Err(ApiError::Hotel(
+            error_stack::Report::new(HotelErrorTypes::UnauthorizedHotelAccess),
+        ));
+    }
+
+    Ok(())
 }

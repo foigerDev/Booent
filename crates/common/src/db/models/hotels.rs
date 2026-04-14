@@ -153,3 +153,31 @@ impl RoomTypesRow {
         }
     }
 }
+
+#[derive(Debug, sqlx::FromRow)]
+pub struct RoomTypeImagesRow {
+    pub id: uuid::Uuid,
+    pub room_type_id: uuid::Uuid,
+    pub image_url: String,
+    pub image_type: Option<String>,
+    pub display_order: i32,
+    pub created_at: Option<time::OffsetDateTime>,
+}
+
+impl RoomTypeImagesRow {
+    pub fn into_domain_model(self) -> domain_models::room_types::RoomTypeImageData {
+        let image_type = self
+            .image_type
+            .and_then(|t| common_enums::RoomImageType::try_from(t.as_str()).ok());
+        domain_models::room_types::RoomTypeImageData {
+            id: self.id,
+            room_type_id: self.room_type_id,
+            image_url: self.image_url,
+            image_type,
+            display_order: self.display_order,
+            created_at: self
+                .created_at
+                .unwrap_or_else(time::OffsetDateTime::now_utc),
+        }
+    }
+}

@@ -1,3 +1,4 @@
+use crate::common_enums::RoomImageType;
 use bigdecimal::BigDecimal;
 use time::OffsetDateTime;
 use uuid::Uuid;
@@ -83,4 +84,14 @@ pub struct CombinedRoomData {
     pub is_active: bool,
     pub created_at: OffsetDateTime,
     pub updated_at: OffsetDateTime,
+}
+
+#[derive(Debug, Clone)]
+pub struct RoomTypeImageData {
+    pub id: Uuid,
+    pub room_type_id: Uuid,
+    pub image_url: String,
+    pub image_type: Option<RoomImageType>,
+    pub display_order: i32,
+    pub created_at: OffsetDateTime,
 }

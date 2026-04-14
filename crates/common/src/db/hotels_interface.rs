@@ -1,4 +1,4 @@
-use crate::{db::models::{hotels, hotel_users}, domain_models, errors};
+use crate::{db::models::{hotels, hotel_users}, domain_models, errors, common_enums};
 use async_trait::async_trait;
 use error_stack::ResultExt;
 
@@ -98,6 +98,29 @@ pub trait HotelRepository {
         room_type_id: uuid::Uuid,
         amenity_ids: &[uuid::Uuid],
     ) -> Result<(), error_stack::Report<errors::HotelErrorTypes>>;
+
+    async fn add_room_type_image(
+        &self,
+        room_type_id: uuid::Uuid,
+        image_url: String,
+        image_type: common_enums::RoomImageType,
+        display_order: i32,
+    ) -> Result<domain_models::room_types::RoomTypeImageData, error_stack::Report<errors::HotelErrorTypes>>;
+
+    async fn get_room_type_image_by_id(
+        &self,
+        image_id: uuid::Uuid,
+    ) -> Result<domain_models::room_types::RoomTypeImageData, error_stack::Report<errors::HotelErrorTypes>>;
+
+    async fn get_room_type_images(
+        &self,
+        room_type_id: uuid::Uuid,
+    ) -> Result<Vec<domain_models::room_types::RoomTypeImageData>, error_stack::Report<errors::HotelErrorTypes>>;
+
+    async fn delete_room_type_image(
+        &self,
+        image_id: uuid::Uuid,
+    ) -> Result<uuid::Uuid, error_stack::Report<errors::HotelErrorTypes>>;
 }
 
 #[async_trait]
@@ -436,5 +459,84 @@ impl HotelRepository for sqlx::PgPool {
         }
 
         Ok(())
+    }
+
+    async fn add_room_type_image(
+        &self,
+        room_type_id: uuid::Uuid,
+        image_url: String,
+        image_type: common_enums::RoomImageType,
+        display_order: i32,
+    ) -> Result<domain_models::room_types::RoomTypeImageData, error_stack::Report<errors::HotelErrorTypes>> {
+        let image = sqlx::query_file_as!(
+            hotels::RoomTypeImagesRow,
+            "src/db/queries/insert_room_type_image.sql",
+            room_type_id,
+            image_url,
+            image_type.to_string(),
+            display_order
+        )
+        .fetch_one(self)
+        .await
+        .attach_printable("Database error while adding room type image")
+        .change_context(errors::HotelErrorTypes::InternalServerError)?;
+
+        Ok(image.into_domain_model())
+    }
+
+    async fn get_room_type_image_by_id(
+        &self,
+        image_id: uuid::Uuid,
+    ) -> Result<domain_models::room_types::RoomTypeImageData, error_stack::Report<errors::HotelErrorTypes>> {
+        let image = sqlx::query_file_as!(
+            hotels::RoomTypeImagesRow,
+            "src/db/queries/get_room_type_image_by_id.sql",
+            image_id
+        )
+        .fetch_optional(self)
+        .await
+        .attach_printable("Database error while fetching room type image")
+        .change_context(errors::HotelErrorTypes::InternalServerError)?;
+
+        match image {
+            Some(img) => Ok(img.into_domain_model()),
+            None => Err(error_stack::Report::new(errors::HotelErrorTypes::ImageNotFound)),
+        }
+    }
+
+    async fn get_room_type_images(
+        &self,
+        room_type_id: uuid::Uuid,
+    ) -> Result<Vec<domain_models::room_types::RoomTypeImageData>, error_stack::Report<errors::HotelErrorTypes>> {
+        let images = sqlx::query_file_as!(
+            hotels::RoomTypeImagesRow,
+            "src/db/queries/get_room_type_images.sql",
+            room_type_id
+        )
+        .fetch_all(self)
+        .await
+        .attach_printable("Database error while fetching room type images")
+        .change_context(errors::HotelErrorTypes::InternalServerError)?;
+
+        Ok(images.into_iter().map(|row| row.into_domain_model()).collect())
+    }
+
+    async fn delete_room_type_image(
+        &self,
+        image_id: uuid::Uuid,
+    ) -> Result<uuid::Uuid, error_stack::Report<errors::HotelErrorTypes>> {
+        let result = sqlx::query_scalar::<_, uuid::Uuid>(
+            "DELETE FROM room_type_images WHERE id = $1 RETURNING id"
+        )
+        .bind(image_id)
+        .fetch_optional(self)
+        .await
+        .attach_printable("Database error while deleting room type image")
+        .change_context(errors::HotelErrorTypes::InternalServerError)?;
+
+        match result {
+            Some(id) => Ok(id),
+            None => Err(error_stack::Report::new(errors::HotelErrorTypes::ImageNotFound)),
+        }
     }
 }

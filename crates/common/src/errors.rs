@@ -74,6 +74,7 @@ pub enum HotelErrorTypes {
     HotelNotFound,
     UnauthorizedHotelAccess,
     InternalServerError,
+    ImageNotFound,
 }
 
 impl fmt::Display for HotelErrorTypes {
@@ -86,6 +87,7 @@ impl fmt::Display for HotelErrorTypes {
                 write!(f, "You don't have access to this hotel")
             }
             HotelErrorTypes::InternalServerError => write!(f, "Internal server error"),
+            HotelErrorTypes::ImageNotFound => write!(f, "Image not found"),
         }
     }
 }
@@ -179,6 +181,7 @@ impl IntoResponse for ApiError {
                     HotelErrorTypes::HotelNotFound => StatusCode::NOT_FOUND,
                     HotelErrorTypes::UnauthorizedHotelAccess => StatusCode::FORBIDDEN,
                     HotelErrorTypes::InternalServerError => StatusCode::INTERNAL_SERVER_ERROR,
+                    HotelErrorTypes::ImageNotFound => StatusCode::NOT_FOUND,
                 };
 
                 let body = ErrorResponse {
